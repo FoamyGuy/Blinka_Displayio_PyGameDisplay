@@ -17,7 +17,7 @@ Introduction
     :target: https://github.com/psf/black
     :alt: Code Style: Black
 
-.. image:: banner.png
+.. image:: https://github.com/FoamyGuy/Blinka_Displayio_PyGameDisplay/blob/main/banner.png?raw=true
     :alt: PyGame + Blinka
 
 Blinka makes her debut on the big screen! With this library you can use CircuitPython ``displayio`` code on PC and Raspberry Pi to output to a PyGame window instead of a hardware display connected to I2C or SPI. This makes it easy to to use ``displayio`` elements on HDMI and other large format screens.
