@@ -47,10 +47,9 @@ Rectangle = recordclass("Rectangle", "x1 y1 x2 y2")
 class PyGameDisplay(displayio.Display):
     """PyGame display driver"""
 
-    def __init__(self,  **kwargs):
+    def __init__(self, **kwargs):
         self.running = True
         super().__init__(None, _INIT_SEQUENCE, **kwargs)
-
 
     def _initialize(self, init_sequence):
         # initialize the pygame module
@@ -96,7 +95,9 @@ class PyGameDisplay(displayio.Display):
             if self._current_group is not None:
                 buffer = Image.new("RGBA", (self._width, self._height))
                 # Recursively have everything draw to the image
-                self._current_group._fill_area(buffer)  # pylint: disable=protected-access
+                self._current_group._fill_area(
+                    buffer
+                )  # pylint: disable=protected-access
                 # save image to buffer (or probably refresh buffer so we can compare)
                 self._buffer.paste(buffer)
 
@@ -116,7 +117,9 @@ class PyGameDisplay(displayio.Display):
         display_rectangle = self._apply_rotation(rectangle)
         img = img.crop(self._clip(display_rectangle))
 
-        raw_str = img.tobytes("raw", 'RGB')
-        pygame_surface = pygame.image.fromstring(raw_str, (img.width, img.height), 'RGB')
+        raw_str = img.tobytes("raw", "RGB")
+        pygame_surface = pygame.image.fromstring(
+            raw_str, (img.width, img.height), "RGB"
+        )
         self._pygame_screen.blit(pygame_surface, (rectangle.x1, rectangle.y1))
         pygame.display.flip()

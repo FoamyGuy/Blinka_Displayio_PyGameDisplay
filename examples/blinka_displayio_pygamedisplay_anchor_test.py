@@ -19,6 +19,6 @@ main_group = displayio.Group()
 main_group.append(text_area)
 display.show(main_group)
 
-#text_area.y = 37
+# text_area.y = 37
 while display.running:
     pass

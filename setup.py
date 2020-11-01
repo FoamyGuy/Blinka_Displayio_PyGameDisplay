@@ -34,10 +34,7 @@ setup(
     # Author details
     author="Tim C",
     author_email="foamyguy@gmail.com",
-    install_requires=[
-        "Adafruit-Blinka",
-        "adafruit-blinka-displayio",
-    ],
+    install_requires=["Adafruit-Blinka", "adafruit-blinka-displayio",],
     # Choose your license
     license="MIT",
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -53,7 +50,7 @@ setup(
     ],
     # What does your project relate to?
     keywords="adafruit blinka circuitpython micropython blinka_displayio_pygamedisplay "
-             "displayio hdmi pc window pygame",
+    "displayio hdmi pc window pygame",
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
     # TODO: IF LIBRARY FILES ARE A PACKAGE FOLDER,

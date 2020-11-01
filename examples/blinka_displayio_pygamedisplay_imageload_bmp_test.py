@@ -7,9 +7,9 @@ import adafruit_imageload
 
 display = PyGameDisplay(width=800, height=600)
 
-bitmap, palette = adafruit_imageload.load("robot_friend.bmp",
-                                          bitmap=displayio.Bitmap,
-                                          palette=displayio.Palette)
+bitmap, palette = adafruit_imageload.load(
+    "robot_friend.bmp", bitmap=displayio.Bitmap, palette=displayio.Palette
+)
 
 # Create a TileGrid to hold the bitmap
 tile_grid = displayio.TileGrid(bitmap, pixel_shader=palette)
