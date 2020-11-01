@@ -32,24 +32,19 @@ This is easily achieved by downloading
 
 Installing from PyPI
 =====================
-.. note:: This library is not available on PyPI yet. Install documentation is included
-   as a standard element. Stay tuned for PyPI availability!
-
-.. todo:: Remove the above note if PyPI version is/will be available at time of release.
-   If the library is not planned for PyPI, remove the entire 'Installing from PyPI' section.
 
 On supported GNU/Linux systems like the Raspberry Pi, you can install the driver locally `from
 PyPI <https://pypi.org/project/adafruit-circuitpython-blinka_displayio_pygamedisplay/>`_. To install for current user:
 
 .. code-block:: shell
 
-    pip3 install adafruit-circuitpython-blinka-displayio-pygamedisplay
+    pip3 install blinka-displayio-pygamedisplay
 
 To install system-wide (this may be required in some cases):
 
 .. code-block:: shell
 
-    sudo pip3 install adafruit-circuitpython-blinka-displayio-pygamedisplay
+    sudo pip3 install blinka-displayio-pygamedisplay
 
 To install in a virtual environment in your current project:
 
@@ -58,12 +53,28 @@ To install in a virtual environment in your current project:
     mkdir project-name && cd project-name
     python3 -m venv .env
     source .env/bin/activate
-    pip3 install adafruit-circuitpython-blinka-displayio-pygamedisplay
+    pip3 install blinka-displayio-pygamedisplay
 
 Usage Example
 =============
 
-.. todo:: Add a quick, simple example. It and other examples should live in the examples folder and be included in docs/examples.rst.
+.. code-block:: python
+
+    import displayio
+    from blinka_displayio_pygamedisplay import PyGameDisplay
+
+    display = PyGameDisplay(width=320, height=240)
+    splash = displayio.Group(max_size=10)
+    display.show(splash)
+
+    color_bitmap = displayio.Bitmap(display.width, display.height, 1)
+    color_palette = displayio.Palette(1)
+    color_palette[0] = 0x00FF00  # Bright Green
+
+    bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
+    splash.append(bg_sprite)
+    while True:
+        pass
 
 Contributing
 ============
