@@ -34,7 +34,7 @@ setup(
     # Author details
     author="Tim C",
     author_email="foamyguy@gmail.com",
-    install_requires=["Adafruit-Blinka", "adafruit-blinka-displayio",],
+    install_requires=["pygame", "adafruit-blinka-displayio"],
     # Choose your license
     license="MIT",
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
