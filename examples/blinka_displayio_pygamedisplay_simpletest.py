@@ -1,12 +1,15 @@
 # SPDX-FileCopyrightText: 2020 Tim C, written for Adafruit Industries
 #
 # SPDX-License-Identifier: Unlicense
-import pygame
-
+"""
+Make green and purple rectangles and a
+"Hello World" label.
+"""
 import displayio
 import terminalio
-from pygame_display import PyGameDisplay
 from adafruit_display_text import label
+from blinka_pygame_display import PyGameDisplay
+
 
 # Make the display context
 display = PyGameDisplay(width=320, height=240)
@@ -33,8 +36,7 @@ splash.append(inner_sprite)
 
 # Draw a label
 text_group = displayio.Group(max_size=10)
-text = "Hello World!"
-text_area = label.Label(terminalio.FONT, text=text, color=0xFFFF00)
+text_area = label.Label(terminalio.FONT, text="Hello World!", color=0xFFFF00)
 text_area.anchor_point = (0.5, 0.5)
 text_area.anchored_position = (display.width // 2, display.height // 2)
 

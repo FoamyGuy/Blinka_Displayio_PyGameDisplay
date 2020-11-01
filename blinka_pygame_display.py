@@ -6,7 +6,8 @@
 `foamyguy_blinka_displayio_pygamedisplay`
 ================================================================================
 
-Use CircuitPython displayio code on PC and Raspberry Pi outputting to a PyGame window instead of a phyisical display.
+Use CircuitPython displayio code on PC and Raspberry Pi output to a
+PyGame window instead of a physical display.
 
 
 * Author(s): Tim C
@@ -14,10 +15,6 @@ Use CircuitPython displayio code on PC and Raspberry Pi outputting to a PyGame w
 Implementation Notes
 --------------------
 
-**Hardware:**
-
-.. todo:: Add links to any specific hardware product page(s), or category page(s). Use unordered list & hyperlink rST
-   inline format: "* `Link Text <url>`_"
 
 **Software and Dependencies:**
 
@@ -53,7 +50,7 @@ class PyGameDisplay(displayio.Display):
 
     def _initialize(self, init_sequence):
         # initialize the pygame module
-        pygame.init()
+        pygame.init()  # pylint: disable=no-member
         # load and set the logo
         logo = pygame.image.load("blinka.png")
         pygame.display.set_icon(logo)
@@ -81,6 +78,7 @@ class PyGameDisplay(displayio.Display):
         When auto refresh is on, updates the display immediately. (The display will also
         update without calls to this.)
         """
+        # pylint: disable=no-member, unused-argument)
         for event in pygame.event.get():
             # only do something if the event is of type QUIT
             if event.type == pygame.QUIT:
@@ -95,6 +93,7 @@ class PyGameDisplay(displayio.Display):
             if self._current_group is not None:
                 buffer = Image.new("RGBA", (self._width, self._height))
                 # Recursively have everything draw to the image
+                # pylint: disable=protected-access
                 self._current_group._fill_area(
                     buffer
                 )  # pylint: disable=protected-access

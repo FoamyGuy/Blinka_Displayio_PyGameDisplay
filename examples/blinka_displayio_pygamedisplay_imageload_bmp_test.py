@@ -1,9 +1,12 @@
 # SPDX-FileCopyrightText: 2020 Tim C, written for Adafruit Industries
 #
 # SPDX-License-Identifier: Unlicense
+"""
+Use adafruit_imageload to show a bitmap on the screen
+"""
 import displayio
-from pygame_display import PyGameDisplay
 import adafruit_imageload
+from blinka_pygame_display import PyGameDisplay
 
 display = PyGameDisplay(width=800, height=600)
 
