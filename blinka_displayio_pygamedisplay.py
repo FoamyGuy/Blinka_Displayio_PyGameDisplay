@@ -47,22 +47,31 @@ class PyGameDisplay(displayio.Display):
         hardware parameters.
         """
 
-    def __init__(self, **kwargs):
+    def __init__(self, icon=None, **kwargs):
         """
-        No arguments.
+        icon - optional icon for the PyGame window
         """
         self.running = True
+        self._icon = None
+        if icon:
+            self._icon = icon
         super().__init__(None, _INIT_SEQUENCE, **kwargs)
 
     def _initialize(self, init_sequence):
         # initialize the pygame module
         pygame.init()  # pylint: disable=no-member
         # load and set the logo
-        logo = pygame.image.load("blinka.png")
-        pygame.display.set_icon(logo)
+
+        if self._icon:
+            print(f"loading icon: {self._icon}")
+            icon = pygame.image.load(self._icon)
+            pygame.display.set_icon(icon)
+
         pygame.display.set_caption("Blinka Displayio PyGame")
 
         self._pygame_screen = pygame.display.set_mode((self._width, self._height))
+
+
 
     def _write(self, command, data):
         pass

@@ -8,7 +8,7 @@ import displayio
 import adafruit_imageload
 from blinka_displayio_pygamedisplay import PyGameDisplay
 
-display = PyGameDisplay(width=800, height=600)
+display = PyGameDisplay(icon="blinka.png", width=800, height=600)
 
 bitmap, palette = adafruit_imageload.load(
     "robot_friend.bmp", bitmap=displayio.Bitmap, palette=displayio.Palette

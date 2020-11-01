@@ -12,7 +12,7 @@ from blinka_displayio_pygamedisplay import PyGameDisplay
 
 
 # Make the display context
-display = PyGameDisplay(width=320, height=240)
+display = PyGameDisplay(icon="blinka.png", width=320, height=240)
 
 # Make the display context
 splash = displayio.Group(max_size=10)
