@@ -24,11 +24,21 @@ Dependencies
 =============
 This driver depends on:
 
-* `Adafruit CircuitPython <https://github.com/adafruit/circuitpython>`_
-* `Adafruit Blinka <https://github.com/adafruit/Adafruit_Blinka>`_
 * `Adafruit Blinka Displayio <https://github.com/adafruit/Adafruit_Blinka_Displayio>`_
 
 Please ensure all dependencies are available they can be installed with pip3
+
+
+Optional Dependencies
+=====================
+This driver can optionally make use of these ``displayio`` module libraries:
+
+* `Adafruit Display Text <https://github.com/adafruit/Adafruit_CircuitPython_Display_Text>`_
+* `Adafruit ImageLoad <https://github.com/adafruit/Adafruit_CircuitPython_ImageLoad>`_
+* `Adafruit Progress Bar <https://github.com/adafruit/Adafruit_CircuitPython_ProgressBar>`_
+* `Adafruit Display Button <https://github.com/adafruit/Adafruit_CircuitPython_Display_Button>`_
+
+They can be installed with pip3.
 
 Installing from PyPI
 =====================
