@@ -8,7 +8,7 @@ Make green and purple rectangles and a
 import displayio
 import terminalio
 from adafruit_display_text import label
-from blinka_pygame_display import PyGameDisplay
+from blinka_displayio_pygamedisplay import PyGameDisplay
 
 
 # Make the display context

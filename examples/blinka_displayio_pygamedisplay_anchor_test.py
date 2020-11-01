@@ -7,7 +7,7 @@ Testing anchor point of adafruit_display_text label.
 import terminalio
 import displayio
 from adafruit_display_text import label
-from blinka_pygame_display import PyGameDisplay
+from blinka_displayio_pygamedisplay import PyGameDisplay
 
 display = PyGameDisplay(width=1770, height=920)
 

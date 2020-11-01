@@ -2,19 +2,18 @@
 # SPDX-FileCopyrightText: Copyright (c) 2020 Tim C for Adafruit Industries
 #
 # SPDX-License-Identifier: MIT
+
 """
-`foamyguy_blinka_displayio_pygamedisplay`
+`blinka_displayio_pygamedisplay`
 ================================================================================
 
 Use CircuitPython displayio code on PC and Raspberry Pi output to a
 PyGame window instead of a physical display.
 
-
 * Author(s): Tim C
 
 Implementation Notes
 --------------------
-
 
 **Software and Dependencies:**
 
@@ -42,9 +41,16 @@ Rectangle = recordclass("Rectangle", "x1 y1 x2 y2")
 
 # pylint: disable=too-few-public-methods
 class PyGameDisplay(displayio.Display):
-    """PyGame display driver"""
+    """PyGame display driver
+
+        Represents one PyGame window. Uses None for all display
+        hardware parameters.
+        """
 
     def __init__(self, **kwargs):
+        """
+        No arguments.
+        """
         self.running = True
         super().__init__(None, _INIT_SEQUENCE, **kwargs)
 
@@ -67,7 +73,8 @@ class PyGameDisplay(displayio.Display):
         # maybe quit pygame?
 
     def refresh(self, *, target_frames_per_second=60, minimum_frames_per_second=1):
-        """When auto refresh is off, waits for the target frame rate and then refreshes the
+        """
+        When auto refresh is off, waits for the target frame rate and then refreshes the
         display, returning True. If the call has taken too long since the last refresh call
         for the given target frame rate, then the refresh returns False immediately without
         updating the screen to hopefully help getting caught up.
@@ -77,7 +84,9 @@ class PyGameDisplay(displayio.Display):
 
         When auto refresh is on, updates the display immediately. (The display will also
         update without calls to this.)
+
         """
+
         # pylint: disable=no-member, unused-argument)
         for event in pygame.event.get():
             # only do something if the event is of type QUIT

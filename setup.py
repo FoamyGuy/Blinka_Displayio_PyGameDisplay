@@ -55,5 +55,5 @@ setup(
     # simple. Or you can use find_packages().
     # TODO: IF LIBRARY FILES ARE A PACKAGE FOLDER,
     #       CHANGE `py_modules=['...']` TO `packages=['...']`
-    py_modules=["pygame_display"],
+    py_modules=["blinka_displayio_pygamedisplay"],
 )

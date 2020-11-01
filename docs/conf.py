@@ -45,7 +45,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "Foamyguy Blinka_Displayio_PyGameDisplay Library"
+project = "Blinka_Displayio_PyGameDisplay Library"
 copyright = "2020 Tim C"
 author = "Tim C"
 
@@ -127,7 +127,7 @@ html_static_path = ["_static"]
 html_favicon = "_static/favicon.ico"
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "FoamyguyBlinka_displayio_pygamedisplayLibrarydoc"
+htmlhelp_basename = "Blinka_displayio_pygamedisplayLibrarydoc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -148,8 +148,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "FoamyguyBlinka_Displayio_PyGameDisplayLibrary.tex",
-        "FoamyguyBlinka_Displayio_PyGameDisplay Library Documentation",
+        "Blinka_Displayio_PyGameDisplayLibrary.tex",
+        "Blinka_Displayio_PyGameDisplay Library Documentation",
         author,
         "manual",
     ),
@@ -162,8 +162,8 @@ latex_documents = [
 man_pages = [
     (
         master_doc,
-        "FoamyguyBlinka_Displayio_PyGameDisplaylibrary",
-        "Foamyguy Blinka_Displayio_PyGameDisplay Library Documentation",
+        "Blinka_Displayio_PyGameDisplaylibrary",
+        "Blinka_Displayio_PyGameDisplay Library Documentation",
         [author],
         1,
     ),
@@ -177,10 +177,10 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        "FoamyguyBlinka_Displayio_PyGameDisplayLibrary",
-        "Foamyguy Blinka_Displayio_PyGameDisplay Library Documentation",
+        "Blinka_Displayio_PyGameDisplayLibrary",
+        "Blinka_Displayio_PyGameDisplay Library Documentation",
         author,
-        "FoamyguyBlinka_Displayio_PyGameDisplayLibrary",
+        "Blinka_Displayio_PyGameDisplayLibrary",
         "One line description of project.",
         "Miscellaneous",
     ),

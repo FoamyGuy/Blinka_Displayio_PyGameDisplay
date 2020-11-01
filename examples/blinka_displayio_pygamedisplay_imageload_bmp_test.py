@@ -6,7 +6,7 @@ Use adafruit_imageload to show a bitmap on the screen
 """
 import displayio
 import adafruit_imageload
-from blinka_pygame_display import PyGameDisplay
+from blinka_displayio_pygamedisplay import PyGameDisplay
 
 display = PyGameDisplay(width=800, height=600)
 
