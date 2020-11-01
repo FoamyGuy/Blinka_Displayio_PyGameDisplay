@@ -30,7 +30,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/x-rst",
     # The project's main homepage.
-    url="https://github.com/adafruit/Adafruit_CircuitPython_Blinka_Displayio_PyGameDisplay",
+    url="https://github.com/foamyguy/Blinka_Displayio_PyGameDisplay",
     # Author details
     author="Tim C",
     author_email="foamyguy@gmail.com",
