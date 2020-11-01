@@ -1,4 +1,6 @@
-
+# SPDX-FileCopyrightText: 2020 Tim C, written for Adafruit Industries
+#
+# SPDX-License-Identifier: Unlicense
 import terminalio
 import displayio
 from adafruit_display_text import label

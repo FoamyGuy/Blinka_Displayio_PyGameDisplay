@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2017 Scott Shawcroft, written for Adafruit Industries
-# SPDX-FileCopyrightText: Copyright (c) 2020 Tim C for foamyguy
+# SPDX-FileCopyrightText: Copyright (c) 2020 Tim C for Adafruit Industries
 #
 # SPDX-License-Identifier: MIT
 """
@@ -48,8 +48,9 @@ class PyGameDisplay(displayio.Display):
     """PyGame display driver"""
 
     def __init__(self,  **kwargs):
-        super().__init__(None, _INIT_SEQUENCE, **kwargs)
         self.running = True
+        super().__init__(None, _INIT_SEQUENCE, **kwargs)
+
 
     def _initialize(self, init_sequence):
         # initialize the pygame module
@@ -88,23 +89,23 @@ class PyGameDisplay(displayio.Display):
                 time.sleep(0.05)
                 pygame.quit()
 
+        if self.running:
+            self._subrectangles = []
 
-        self._subrectangles = []
+            # Go through groups and and add each to buffer
+            if self._current_group is not None:
+                buffer = Image.new("RGBA", (self._width, self._height))
+                # Recursively have everything draw to the image
+                self._current_group._fill_area(buffer)  # pylint: disable=protected-access
+                # save image to buffer (or probably refresh buffer so we can compare)
+                self._buffer.paste(buffer)
 
-        # Go through groups and and add each to buffer
-        if self._current_group is not None:
-            buffer = Image.new("RGBA", (self._width, self._height))
-            # Recursively have everything draw to the image
-            self._current_group._fill_area(buffer)  # pylint: disable=protected-access
-            # save image to buffer (or probably refresh buffer so we can compare)
-            self._buffer.paste(buffer)
+            if self._current_group is not None:
+                # Eventually calculate dirty rectangles here
+                self._subrectangles.append(Rectangle(0, 0, self._width, self._height))
 
-        if self._current_group is not None:
-            # Eventually calculate dirty rectangles here
-            self._subrectangles.append(Rectangle(0, 0, self._width, self._height))
-
-        for area in self._subrectangles:
-            self._refresh_display_area(area)
+            for area in self._subrectangles:
+                self._refresh_display_area(area)
 
     def _refresh_display_area(self, rectangle):
         """Loop through dirty rectangles and redraw that area."""
