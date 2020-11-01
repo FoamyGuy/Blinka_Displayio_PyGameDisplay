@@ -17,7 +17,7 @@ Introduction
     :target: https://github.com/psf/black
     :alt: Code Style: Black
 
-Use CircuitPython displayio code on PC and Raspberry Pi outputting to a PyGame window instead of a phyisical display.
+Blinka makes her debut on the big screen! With this library you can use CircuitPython `displayio` code on PC and Raspberry Pi to output to a PyGame window instead of a hardware display connected to I2C or SPI. This makes it easy to to use `displayio` on HDMI and other large format screens.
 
 
 Dependencies
@@ -25,10 +25,10 @@ Dependencies
 This driver depends on:
 
 * `Adafruit CircuitPython <https://github.com/adafruit/circuitpython>`_
+* `Adafruit Blinka <https://github.com/adafruit/Adafruit_Blinka>`_
+* `Adafruit Blinka Displayio <https://github.com/adafruit/Adafruit_Blinka_Displayio>`_
 
-Please ensure all dependencies are available on the CircuitPython filesystem.
-This is easily achieved by downloading
-`the Adafruit library and driver bundle <https://circuitpython.org/libraries>`_.
+Please ensure all dependencies are available they can be installed with pip3
 
 Installing from PyPI
 =====================
