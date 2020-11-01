@@ -54,8 +54,6 @@ jobs:
       run: |
         pylint $( find . -path './blinka*.py' )
         ([[ ! -d "examples" ]] || pylint --disable=missing-docstring,invalid-name,bad-whitespace $( find . -path "./examples/*.py" ))
-    - name: Build assets
-      run: circuitpython-build-bundles --filename_prefix ${{ steps.repo-name.outputs.repo-name }} --library_location .
     - name: Build docs
       working-directory: docs
       run: sphinx-build -E -W -b html . _build/html
