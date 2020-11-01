@@ -1,8 +1,8 @@
 Introduction
 ============
 
-.. image:: https://readthedocs.org/projects/foamyguy-circuitpython-blinka_displayio_pygamedisplay/badge/?version=latest
-    :target: https://circuitpython.readthedocs.io/projects/blinka_displayio_pygamedisplay/en/latest/
+.. image:: https://readthedocs.org/projects/blinka_displayio_pygamedisplay/badge/?version=latest
+    :target: https://blinka-displayio-pygamedisplay.readthedocs.io/en/latest/
     :alt: Documentation Status
 
 .. image:: https://img.shields.io/discord/327254708534116352.svg
