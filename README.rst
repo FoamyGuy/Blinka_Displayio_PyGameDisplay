@@ -24,6 +24,7 @@ Dependencies
 =============
 This driver depends on:
 
+* `PyGame <https://github.com/pygame/pygame>`_
 * `Adafruit Blinka Displayio <https://github.com/adafruit/Adafruit_Blinka_Displayio>`_
 
 Please ensure all dependencies are available they can be installed with pip3
@@ -83,7 +84,8 @@ Usage Example
 
     bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
     splash.append(bg_sprite)
-    while True:
+    # Must check display.running in the main loop!
+    while display.running:
         pass
 
 Contributing

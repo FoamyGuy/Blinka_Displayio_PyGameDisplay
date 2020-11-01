@@ -17,5 +17,7 @@ color_palette[0] = 0x00FF00  # Bright Green
 
 bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
 splash.append(bg_sprite)
-while True:
+
+# Must check display.running in the main loop!
+while display.running:
     pass
