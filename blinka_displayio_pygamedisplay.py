@@ -71,8 +71,6 @@ class PyGameDisplay(displayio.Display):
 
         self._pygame_screen = pygame.display.set_mode((self._width, self._height))
 
-
-
     def _write(self, command, data):
         pass
         # don't need to write to anything
