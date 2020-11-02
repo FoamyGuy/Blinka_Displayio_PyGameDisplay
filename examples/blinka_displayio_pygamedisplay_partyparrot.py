@@ -11,6 +11,7 @@ import time
 import displayio
 import adafruit_imageload
 from blinka_displayio_pygamedisplay import PyGameDisplay
+
 display = PyGameDisplay(width=320, height=320)
 
 group = displayio.Group(max_size=20, scale=10)
@@ -19,24 +20,30 @@ group = displayio.Group(max_size=20, scale=10)
 #  https://github.com/adafruit/Adafruit_Learning_System_Guides/tree/master/IoT_Party_Parrot
 
 #  load in party parrot bitmap
-parrot_bit, parrot_pal = adafruit_imageload.load("partyParrotsTweet.bmp",
-                                                 bitmap=displayio.Bitmap,
-                                                 palette=displayio.Palette)
+parrot_bit, parrot_pal = adafruit_imageload.load(
+    "partyParrotsTweet.bmp", bitmap=displayio.Bitmap, palette=displayio.Palette
+)
 
-parrot_grid = displayio.TileGrid(parrot_bit, pixel_shader=parrot_pal,
-                                 width=1, height=1,
-                                 tile_height=32, tile_width=32,
-                                 default_tile=10,
-                                 x=0, y=0)
+parrot_grid = displayio.TileGrid(
+    parrot_bit,
+    pixel_shader=parrot_pal,
+    width=1,
+    height=1,
+    tile_height=32,
+    tile_width=32,
+    default_tile=10,
+    x=0,
+    y=0,
+)
 
 group.append(parrot_grid)
 
 display.show(group)
 
-parrot = True #  state to track if an animation is currently running
-party = 0 #  time.monotonic() holder
-p = 0 #  index for tilegrid
-party_count = 0 #  count for animation cycles
+parrot = True  #  state to track if an animation is currently running
+party = 0  #  time.monotonic() holder
+p = 0  #  index for tilegrid
+party_count = 0  #  count for animation cycles
 
 while display.running:
     #  when a new tweet comes in...
