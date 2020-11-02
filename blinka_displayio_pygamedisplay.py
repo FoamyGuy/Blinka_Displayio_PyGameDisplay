@@ -99,7 +99,7 @@ class PyGameDisplay(displayio.Display):
             # only do something if the event is of type QUIT
             if event.type == pygame.QUIT:
                 self.running = False
-                time.sleep(0.05)
+                time.sleep(0.1)
                 pygame.quit()
 
         if self.running:
