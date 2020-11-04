@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2020 Kevin Matocha, Tim C, written for Adafruit Industries
+#
+# SPDX-License-Identifier: Unlicense
 """
 This example has been adapted from the example in the shapes
 library to work with pygame display.

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 Tim C written for Adafruit Industries
+#
+# SPDX-License-Identifier: Unlicense
+
 """
 This is adapted from an example in the shapes library to work with pygame display.
 It shows how to draw various different shapes and place them on the screen.
