@@ -65,13 +65,14 @@ while display.running:
         pos = pygame.mouse.get_pos()
         print(pos)
         button.selected = False
-        if CUR_COLOR == GREEN:
-            print("change to blue")
-            color_palette[0] = BLUE
-            CUR_COLOR = BLUE
-        else:
-            color_palette[0] = GREEN
-            CUR_COLOR = GREEN
+        if button.contains(pos):
+            if CUR_COLOR == GREEN:
+                print("change to blue")
+                color_palette[0] = BLUE
+                CUR_COLOR = BLUE
+            else:
+                color_palette[0] = GREEN
+                CUR_COLOR = GREEN
     # get mouse down  events
     ev = pygame.event.get(eventtype=pygame.MOUSEBUTTONDOWN)
     for event in ev:

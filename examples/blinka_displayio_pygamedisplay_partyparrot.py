@@ -8,8 +8,8 @@ https://github.com/adafruit/Adafruit_Learning_System_Guides/tree/master/IoT_Part
 Thank you @BlitzCityDIY
 """
 import time
-import displayio
 import adafruit_imageload
+import displayio
 from blinka_displayio_pygamedisplay import PyGameDisplay
 
 display = PyGameDisplay(width=320, height=320)
