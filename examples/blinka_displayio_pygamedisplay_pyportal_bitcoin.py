@@ -13,6 +13,7 @@ import time
 from adafruit_pyportal import PyPortal
 from secret_credentials import secrets
 from blinka_displayio_pygamedisplay import PyGameDisplay
+
 # Make the display context
 display = PyGameDisplay(icon="blinka.png", width=320, height=240)
 # You can display in 'GBP', 'EUR' or 'USD'
@@ -20,6 +21,7 @@ CURRENCY = "USD"
 # Set up where we'll be fetching data from
 DATA_SOURCE = "https://api.coindesk.com/v1/bpi/currentprice.json"
 DATA_LOCATION = ["bpi", CURRENCY, "rate_float"]
+
 
 def text_transform(val):
     """Format value with currency symbol"""
@@ -30,6 +32,7 @@ def text_transform(val):
     if CURRENCY == "GBP":
         return "£%d" % val
     return "%d" % val
+
 
 # the current working directory (where this file is)
 try:
@@ -46,7 +49,7 @@ pyportal = PyPortal(
     text_color=0x0,
     text_transform=text_transform,
     display=display,
-    secrets=secrets
+    secrets=secrets,
 )
 pyportal.preload_font(b"$012345789")  # preload numbers
 pyportal.preload_font((0x00A3, 0x20AC))  # preload gbp/euro symbol
