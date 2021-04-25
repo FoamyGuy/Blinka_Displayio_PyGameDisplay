@@ -26,7 +26,7 @@ setup(
     name="blinka-displayio-pygamedisplay",
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
-    description="Use CircuitPython displayio code on PC and Raspberry Pi outputting to a PyGame window instead of a phyisical display.",
+    description="Use CircuitPython displayio code on PC and Raspberry Pi outputting to a PyGame window instead of a physical display.",
     long_description=long_description,
     long_description_content_type="text/x-rst",
     # The project's main homepage.
