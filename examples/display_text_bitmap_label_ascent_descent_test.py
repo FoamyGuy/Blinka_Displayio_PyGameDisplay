@@ -16,14 +16,16 @@ from blinka_displayio_pygamedisplay import PyGameDisplay
 display = PyGameDisplay(width=320, height=240)
 
 font = bitmap_font.load_font("font/forkawesome-36.pcf")
-w,h,dx,dy = font.get_bounding_box()
+w, h, dx, dy = font.get_bounding_box()
 
-glyphs = "".join(chr(0xf000 + i) for i in range(8))
+glyphs = "".join(chr(0xF000 + i) for i in range(8))
 
 group = displayio.Group()
 
-label = bitmap_label.Label(font=font, text=glyphs, background_color=0x0000DD, background_tight=True)
-#label = label.Label(font=font, text=glyphs, background_color=0x0000DD, background_tight=True)
+label = bitmap_label.Label(
+    font=font, text=glyphs, background_color=0x0000DD, background_tight=True
+)
+# label = label.Label(font=font, text=glyphs, background_color=0x0000DD, background_tight=True)
 
 label.anchor_point = (0, 0)
 label.anchored_position = (0, 20)

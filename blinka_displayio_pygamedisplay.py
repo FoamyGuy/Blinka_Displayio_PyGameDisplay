@@ -128,15 +128,12 @@ class PyGameDisplay(displayio.Display):
 
         img = self._buffer.convert("RGB").crop(astuple(rectangle))
         img = img.rotate(self._rotation, expand=True)
-        img.save("temp_displayio_test.png")
         display_rectangle = self._apply_rotation(rectangle)
         img = img.crop(astuple(self._clip(display_rectangle)))
-        #img.save("tmp_displayio_test.png")
         raw_str = img.tobytes("raw", "RGB")
         pygame_surface = pygame.image.fromstring(
             raw_str, (img.width, img.height), "RGB"
         )
-        #print("({}, {})".format(img.width, img.height))
+        # print("({}, {})".format(img.width, img.height))
         self._pygame_screen.blit(pygame_surface, (rectangle.x1, rectangle.y1))
         pygame.display.flip()
-
