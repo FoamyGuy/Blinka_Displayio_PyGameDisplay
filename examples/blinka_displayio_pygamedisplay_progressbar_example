@@ -1,10 +1,16 @@
+# SPDX-FileCopyrightText: 2020 Tim C
+#
+# SPDX-License-Identifier: Unlicense
+"""
+example showing the use of adafruit_progressbar
+"""
 import time
 import displayio
 from adafruit_progressbar.adafruit_progressbar import ProgressBar
 from blinka_displayio_pygamedisplay import PyGameDisplay
 
 # Make the display context
-splash = displayio.Group(max_size=20, scale=2)
+splash = displayio.Group(scale=2)
 
 display = PyGameDisplay(width=480, height=320)
 
