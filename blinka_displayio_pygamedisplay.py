@@ -28,6 +28,7 @@ __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/foamyguy/Foamyguy_CircuitPython_Blinka_Displayio_PyGameDisplay.git"
 
 import time
+from dataclasses import astuple
 
 import displayio
 import pygame
@@ -106,19 +107,18 @@ class PyGameDisplay(displayio.Display):
             self._subrectangles = []
 
             # Go through groups and and add each to buffer
-            if self._current_group is not None:
-                buffer = Image.new("RGBA", (self._width, self._height))
+            if self._core._current_group is not None:
+
+                buffer = Image.new("RGBA", (self._core._width, self._core._height))
                 # Recursively have everything draw to the image
                 # pylint: disable=protected-access
-                self._current_group._fill_area(
+                self._core._current_group._fill_area(
                     buffer
                 )  # pylint: disable=protected-access
                 # save image to buffer (or probably refresh buffer so we can compare)
                 self._buffer.paste(buffer)
 
-            if self._current_group is not None:
-                # Eventually calculate dirty rectangles here
-                self._subrectangles.append(Rectangle(0, 0, self._width, self._height))
+            self._subrectangles = self._core.get_refresh_areas()
 
             for area in self._subrectangles:
                 self._refresh_display_area(area)
@@ -126,15 +126,17 @@ class PyGameDisplay(displayio.Display):
     def _refresh_display_area(self, rectangle):
         """Loop through dirty rectangles and redraw that area."""
 
-        img = self._buffer.convert("RGB").crop(rectangle)
+        img = self._buffer.convert("RGB").crop(astuple(rectangle))
         img = img.rotate(self._rotation, expand=True)
-
+        img.save("temp_displayio_test.png")
         display_rectangle = self._apply_rotation(rectangle)
-        img = img.crop(self._clip(display_rectangle))
-
+        img = img.crop(astuple(self._clip(display_rectangle)))
+        #img.save("tmp_displayio_test.png")
         raw_str = img.tobytes("raw", "RGB")
         pygame_surface = pygame.image.fromstring(
             raw_str, (img.width, img.height), "RGB"
         )
+        #print("({}, {})".format(img.width, img.height))
         self._pygame_screen.blit(pygame_surface, (rectangle.x1, rectangle.y1))
         pygame.display.flip()
+

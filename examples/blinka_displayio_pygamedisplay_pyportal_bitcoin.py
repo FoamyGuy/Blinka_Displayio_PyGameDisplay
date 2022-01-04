@@ -41,6 +41,7 @@ except AttributeError:
     cwd = ("/" + __file__).rsplit("/", 1)[0]
 
 pyportal = PyPortal(
+    external_spi="fake",
     url=DATA_SOURCE,
     json_path=DATA_LOCATION,
     default_bg=cwd + "/bitcoin_background.bmp",

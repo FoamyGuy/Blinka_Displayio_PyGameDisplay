@@ -12,10 +12,10 @@ from blinka_displayio_pygamedisplay import PyGameDisplay
 
 
 # Make the display context
-display = PyGameDisplay(icon="blinka.png", width=320, height=240)
+display = PyGameDisplay(icon="blinka.png", width=400, height=300)
 
 # Make the display context
-splash = displayio.Group(max_size=10)
+splash = displayio.Group()
 display.show(splash)
 
 # Draw a green background
@@ -35,8 +35,8 @@ inner_sprite = displayio.TileGrid(inner_bitmap, pixel_shader=inner_palette, x=20
 splash.append(inner_sprite)
 
 # Draw a label
-text_group = displayio.Group(max_size=10)
-text_area = label.Label(terminalio.FONT, text="Hello World!", color=0xFFFF00)
+text_group = displayio.Group()
+text_area = label.Label(terminalio.FONT, text="Hello World!", color=0xFFFF00, scale=4)
 text_area.anchor_point = (0.5, 0.5)
 text_area.anchored_position = (display.width // 2, display.height // 2)
 

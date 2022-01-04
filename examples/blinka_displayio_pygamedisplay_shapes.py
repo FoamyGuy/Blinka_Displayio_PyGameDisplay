@@ -17,7 +17,7 @@ from adafruit_display_shapes.polygon import Polygon
 from blinka_displayio_pygamedisplay import PyGameDisplay
 
 # Make the display context
-splash = displayio.Group(max_size=20, scale=2)
+splash = displayio.Group(scale=2)
 
 display = PyGameDisplay(icon="blinka.png", width=640, height=480)
 display.show(splash)
@@ -66,6 +66,8 @@ splash.append(rect)
 circle = Circle(100, 30, 20, fill=0x00FF00, outline=0xFF00FF)
 circle.x += 200
 splash.append(circle)
+
+print(circle.fill)
 
 rect2 = Rect(50, 100, 61, 81, outline=0x0, stroke=3)
 rect2.y += 10
