@@ -6,8 +6,6 @@ Make green and purple rectangles and a
 "Hello World" label.
 """
 import displayio
-import terminalio
-from adafruit_display_text import label
 from blinka_displayio_pygamedisplay import PyGameDisplay
 
 

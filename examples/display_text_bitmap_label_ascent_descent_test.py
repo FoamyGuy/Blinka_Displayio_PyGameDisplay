@@ -6,7 +6,7 @@ Make green and purple rectangles and a
 "Hello World" label.
 """
 import displayio
-import terminalio
+
 from adafruit_bitmap_font import bitmap_font
 
 from adafruit_display_text import bitmap_label, label

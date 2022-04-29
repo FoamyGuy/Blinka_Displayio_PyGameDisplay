@@ -56,9 +56,12 @@ class PyGameDisplay(displayio.Display):
         self._icon = None
         if icon:
             self._icon = icon
+        self._subrectangles = []
+        self._pygame_screen = None
         super().__init__(None, _INIT_SEQUENCE, **kwargs)
 
     def _initialize(self, init_sequence):
+        # pylint: disable=unused-argument
         # initialize the pygame module
         pygame.init()  # pylint: disable=no-member
         # load and set the logo
@@ -95,7 +98,7 @@ class PyGameDisplay(displayio.Display):
 
         """
 
-        # pylint: disable=no-member, unused-argument)
+        # pylint: disable=no-member, unused-argument, protected-access
         for event in pygame.event.get():
             # only do something if the event is of type QUIT
             if event.type == pygame.QUIT:
@@ -111,7 +114,7 @@ class PyGameDisplay(displayio.Display):
 
                 buffer = Image.new("RGBA", (self._core._width, self._core._height))
                 # Recursively have everything draw to the image
-                # pylint: disable=protected-access
+
                 self._core._current_group._fill_area(
                     buffer
                 )  # pylint: disable=protected-access

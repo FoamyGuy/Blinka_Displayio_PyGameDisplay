@@ -1,7 +1,6 @@
-# SPDX-FileCopyrightText: 2017 Scott Shawcroft, written for Adafruit Industries
+# SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
 #
-# SPDX-License-Identifier: MIT
-
+# SPDX-License-Identifier: Unlicense
 name: Release Actions
 
 on:
@@ -33,5 +32,8 @@ jobs:
         TWINE_USERNAME: ${{ secrets.pypi_username }}
         TWINE_PASSWORD: ${{ secrets.pypi_password }}
       run: |
+        for file in $(find -not -path "./.*" -not -path "./docs*" -name "*.py"); do
+            sed -i -e "s/0.0.0-auto.0/${{github.event.release.tag_name}}/" $file;
+        done;
         python setup.py sdist
         twine upload dist/*
