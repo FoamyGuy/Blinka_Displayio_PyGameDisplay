@@ -15,7 +15,7 @@ from blinka_displayio_pygamedisplay import PyGameDisplay
 display = PyGameDisplay(width=320, height=240)
 
 # Make the display context
-main_group = displayio.Group(max_size=10)
+main_group = displayio.Group()
 display.show(main_group)
 
 

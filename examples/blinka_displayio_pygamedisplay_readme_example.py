@@ -8,7 +8,7 @@ import displayio
 from blinka_displayio_pygamedisplay import PyGameDisplay
 
 display = PyGameDisplay(width=320, height=240)
-splash = displayio.Group(max_size=10)
+splash = displayio.Group()
 display.show(splash)
 
 color_bitmap = displayio.Bitmap(display.width, display.height, 1)

@@ -24,7 +24,7 @@ BUTTON_LABEL_COLOR = 0x000000
 # --| Button Config |-------------------------------------------------
 
 display = PyGameDisplay(width=320, height=240)
-splash = displayio.Group(max_size=10)
+splash = displayio.Group()
 display.show(splash)
 
 GREEN = 0x00FF00
@@ -49,7 +49,7 @@ button = Button(
     label_color=BUTTON_LABEL_COLOR,
 )
 
-button.width = 13
+button.width = 130
 
 bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
 splash.append(bg_sprite)

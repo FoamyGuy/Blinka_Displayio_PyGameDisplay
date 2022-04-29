@@ -14,7 +14,7 @@ from blinka_displayio_pygamedisplay import PyGameDisplay
 
 display = PyGameDisplay(width=320, height=320)
 
-group = displayio.Group(max_size=20, scale=10)
+group = displayio.Group(scale=10)
 
 #  get the spritesheet from here:
 #  https://github.com/adafruit/Adafruit_Learning_System_Guides/tree/master/IoT_Party_Parrot
