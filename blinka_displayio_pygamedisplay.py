@@ -44,9 +44,9 @@ Rectangle = recordclass("Rectangle", "x1 y1 x2 y2")
 class PyGameDisplay(displayio.Display):
     """PyGame display driver
 
-        Represents one PyGame window. Uses None for all display
-        hardware parameters.
-        """
+    Represents one PyGame window. Uses None for all display
+    hardware parameters.
+    """
 
     def __init__(self, icon=None, **kwargs):
         """
