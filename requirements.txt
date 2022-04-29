@@ -5,3 +5,4 @@
 
 adafruit-blinka-displayio
 pygame
+recordclass

@@ -109,7 +109,7 @@ bounding_rectangle = Rect(
 # elements are added to the group will set which is on top.  Latter elements
 # are displayed on top of former elemtns.
 
-my_group = displayio.Group(max_size=20)
+my_group = displayio.Group()
 
 my_group.append(sparkline1)
 my_group.append(text_label1a)
