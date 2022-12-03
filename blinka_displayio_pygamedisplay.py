@@ -52,7 +52,7 @@ class PyGameDisplay(displayio.Display):
         """
         icon - optional icon for the PyGame window
         """
-        self.running = True
+        self._running = True
         self._icon = None
         if icon:
             self._icon = icon
@@ -106,7 +106,7 @@ class PyGameDisplay(displayio.Display):
                 time.sleep(0.1)
                 pygame.quit()
 
-        if self.running:
+        if self._running:
             self._subrectangles = []
 
             # Go through groups and and add each to buffer
@@ -140,3 +140,29 @@ class PyGameDisplay(displayio.Display):
         # print("({}, {})".format(img.width, img.height))
         self._pygame_screen.blit(pygame_surface, (rectangle.x1, rectangle.y1))
         pygame.display.flip()
+
+    @property
+    def running(self):
+        """
+        True when the display is running. False means that the user has clicked the
+        exit button in top right corner of the window.
+
+        This method will call refresh() if auto_refresh is True. This allows the
+        auto_refresh functionality to work without threading.
+        """
+        if self.auto_refresh:
+            self.refresh()
+        return self._running
+
+    @running.setter
+    def running(self, new_running_val):
+        self._running = new_running_val
+
+    @property
+    def auto_refresh(self) -> bool:
+        """True when the display is refreshed automatically."""
+        return self._auto_refresh
+
+    @auto_refresh.setter
+    def auto_refresh(self, value: bool):
+        self._auto_refresh = value
