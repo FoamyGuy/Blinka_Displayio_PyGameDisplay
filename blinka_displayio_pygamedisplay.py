@@ -32,7 +32,8 @@ from dataclasses import astuple
 
 import displayio
 import pygame
-from PIL import Image
+from PIL import Image, ImageDraw
+from displayio._structs import RectangleStruct
 from recordclass import recordclass
 
 _INIT_SEQUENCE = None
@@ -108,6 +109,7 @@ class PyGameDisplay(displayio.Display):
 
         if self._running:
             self._subrectangles = []
+            force_full_refresh = False
 
             # Go through groups and and add each to buffer
             if self._core._current_group is not None:
@@ -120,11 +122,22 @@ class PyGameDisplay(displayio.Display):
                 )  # pylint: disable=protected-access
                 # save image to buffer (or probably refresh buffer so we can compare)
                 self._buffer.paste(buffer)
+            else:
+                # show nothing
+                buffer = Image.new("RGBA", (self._core._width, self._core._height))
+                draw = ImageDraw.Draw(buffer)
+                draw.rectangle([(0, 0), buffer.size], fill=(0, 0, 0))
+                self._buffer.paste(buffer)
+                force_full_refresh = True
 
-            self._subrectangles = self._core.get_refresh_areas()
-
-            for area in self._subrectangles:
-                self._refresh_display_area(area)
+            if (force_full_refresh):
+                full_rect = RectangleStruct(0, 0, self._width, self._height)
+                self._refresh_display_area(full_rect)
+            else:
+                self._subrectangles = self._core.get_refresh_areas()
+                print(self._subrectangles)
+                for area in self._subrectangles:
+                    self._refresh_display_area(area)
 
     def _refresh_display_area(self, rectangle):
         """Loop through dirty rectangles and redraw that area."""
