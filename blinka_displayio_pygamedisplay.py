@@ -28,6 +28,7 @@ __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/foamyguy/Foamyguy_CircuitPython_Blinka_Displayio_PyGameDisplay.git"
 
 import time
+import threading
 from dataclasses import astuple
 
 import displayio
@@ -48,20 +49,32 @@ class PyGameDisplay(displayio.Display):
     hardware parameters.
     """
 
-    def __init__(self, icon=None, **kwargs):
+    def __init__(self, icon=None, native_frames_per_second=60, **kwargs):
         """
         icon - optional icon for the PyGame window
         """
-        self._running = True
+        self._native_frames_per_second = native_frames_per_second
         self._icon = None
         if icon:
             self._icon = icon
         self._subrectangles = []
+
         self._pygame_screen = None
+        self._pygame_display_thread = None
+        self._pygame_display_tevent = threading.Event()
+        self._pygame_display_force_update = False
+
         super().__init__(None, _INIT_SEQUENCE, **kwargs)
 
     def _initialize(self, init_sequence):
         # pylint: disable=unused-argument
+        # just start the pygame-refresh loop
+        self._pygame_display_thread = threading.Thread(
+            target=self._pygame_refresh, daemon=True
+        )
+        self._pygame_display_thread.start()
+
+    def _pygame_refresh(self):
         # initialize the pygame module
         pygame.init()  # pylint: disable=no-member
         # load and set the logo
@@ -75,39 +88,15 @@ class PyGameDisplay(displayio.Display):
 
         self._pygame_screen = pygame.display.set_mode((self._width, self._height))
 
-    def _write(self, command, data):
-        pass
-        # don't need to write to anything
+        # pygame-refresh loop
+        while not self._pygame_display_tevent.is_set():
+            time.sleep(1 / self._native_frames_per_second)
+            # refresh pygame-display
+            if not self._auto_refresh and not self._pygame_display_force_update:
+                pygame.display.flip()
+                continue
 
-    def _release(self):
-        pass
-        # maybe quit pygame?
-
-    def refresh(self, *, target_frames_per_second=60, minimum_frames_per_second=1):
-        """
-        When auto refresh is off, waits for the target frame rate and then refreshes the
-        display, returning True. If the call has taken too long since the last refresh call
-        for the given target frame rate, then the refresh returns False immediately without
-        updating the screen to hopefully help getting caught up.
-
-        If the time since the last successful refresh is below the minimum frame rate, then
-        an exception will be raised. Set minimum_frames_per_second to 0 to disable.
-
-        When auto refresh is on, updates the display immediately. (The display will also
-        update without calls to this.)
-
-        """
-
-        # pylint: disable=no-member, unused-argument, protected-access
-        for event in pygame.event.get():
-            # only do something if the event is of type QUIT
-            if event.type == pygame.QUIT:
-                self.running = False
-                time.sleep(0.1)
-                pygame.quit()
-
-        if self._running:
-            self._subrectangles = []
+            self._pygame_display_force_update = False
 
             # Go through groups and and add each to buffer
             if self._core._current_group is not None:
@@ -122,9 +111,55 @@ class PyGameDisplay(displayio.Display):
                 self._buffer.paste(buffer)
 
             self._subrectangles = self._core.get_refresh_areas()
-
             for area in self._subrectangles:
                 self._refresh_display_area(area)
+
+    def _write(self, command, data):
+        pass
+        # don't need to write to anything
+
+    def _release(self):
+        self._pygame_display_tevent.set()
+        self._pygame_display_thread.join()
+        pygame.quit()
+
+    def refresh(self, *, target_frames_per_second=60, minimum_frames_per_second=1):
+        """
+        While normal display-objects call this method also within a refresh
+        loop, this implementation uses this method only for explicit updates.
+        Note that we cannot just call the update-logic directly, since
+        the pygame-display was created on another thread.
+        """
+        # pylint: disable=no-member, unused-argument, protected-access
+        if not self._auto_refresh:
+            self._pygame_display_force_update = True
+
+    def event_loop(self, interval=None, on_time=None, on_event=None, events=[]):
+        """
+        pygame event-loop. Has to be called by the main thread. This method
+        terminates in case of a QUIT-event. An optional callback `on_time` is
+        executed every `interval` seconds. Use this callback for
+        application specific logic.
+        """
+        if interval is None:
+            interval = -1
+        next_time = time.monotonic() + interval
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    # stop and leave method
+                    self._pygame_display_tevent.set()
+                    self._pygame_display_thread.join()
+                    pygame.quit()
+                    return
+                elif event.type in events:
+                    # use callback for event-processing
+                    on_event(event)
+            time.sleep(0.1)
+            # execute application logic
+            if on_time and time.monotonic() > next_time:
+                on_time()
+                next_time = time.monotonic() + interval
 
     def _refresh_display_area(self, rectangle):
         """Loop through dirty rectangles and redraw that area."""
@@ -140,23 +175,6 @@ class PyGameDisplay(displayio.Display):
         # print("({}, {})".format(img.width, img.height))
         self._pygame_screen.blit(pygame_surface, (rectangle.x1, rectangle.y1))
         pygame.display.flip()
-
-    @property
-    def running(self):
-        """
-        True when the display is running. False means that the user has clicked the
-        exit button in top right corner of the window.
-
-        This method will call refresh() if auto_refresh is True. This allows the
-        auto_refresh functionality to work without threading.
-        """
-        if self.auto_refresh:
-            self.refresh()
-        return self._running
-
-    @running.setter
-    def running(self, new_running_val):
-        self._running = new_running_val
 
     @property
     def auto_refresh(self) -> bool:
