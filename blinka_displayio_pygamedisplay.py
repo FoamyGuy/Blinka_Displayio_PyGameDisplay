@@ -32,8 +32,6 @@ __repo__ = "https://github.com/foamyguy/Foamyguy_CircuitPython_Blinka_Displayio_
 import time
 import threading
 from dataclasses import astuple
-from typing import Callable
-
 import displayio
 import pygame
 from PIL import Image
