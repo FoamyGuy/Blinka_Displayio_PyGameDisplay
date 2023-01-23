@@ -22,6 +22,8 @@ Implementation Notes
 
 """
 
+# pylint: disable=protected-access
+
 # imports
 
 __version__ = "0.0.0-auto.0"
@@ -100,7 +102,6 @@ class PyGameDisplay(displayio.Display):
 
             # Go through groups and and add each to buffer
             if self._core._current_group is not None:
-
                 buffer = Image.new("RGBA", (self._core._width, self._core._height))
                 # Recursively have everything draw to the image
 
@@ -134,18 +135,37 @@ class PyGameDisplay(displayio.Display):
         if not self._auto_refresh:
             self._pygame_display_force_update = True
 
-    def event_loop(self, interval=None, on_time=None, on_event=None, events=[]):
+    def check_quit(self):
+        """
+        Check if the quit button on the window is being pressed.
+        """
+        try:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    # stop and leave method
+                    self._pygame_display_tevent.set()
+                    self._pygame_display_thread.join()
+                    pygame.quit()
+                    return True
+        except pygame.error:
+            return True
+        return False
+
+    def event_loop(self, interval=None, on_time=None, on_event=None, events=None):
         """
         pygame event-loop. Has to be called by the main thread. This method
         terminates in case of a QUIT-event. An optional callback `on_time` is
         executed every `interval` seconds. Use this callback for
         application specific logic.
         """
+        if events is None:
+            events = []
         if interval is None:
             interval = -1
         next_time = time.monotonic() + interval
         while True:
             for event in pygame.event.get():
+                # pylint: disable=no-else-return
                 if event.type == pygame.QUIT:
                     # stop and leave method
                     self._pygame_display_tevent.set()

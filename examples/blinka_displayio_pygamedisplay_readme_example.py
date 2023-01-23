@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020 Tim C, written for Adafruit Industries
+# SPDX-FileCopyrightText: 2020 Tim C
 #
 # SPDX-License-Identifier: Unlicense
 """
@@ -18,6 +18,7 @@ color_palette[0] = 0x00FF00  # Bright Green
 bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
 splash.append(bg_sprite)
 
-# Must check display.running in the main loop!
-while display.running:
-    pass
+
+while True:
+    if display.check_quit():
+        break

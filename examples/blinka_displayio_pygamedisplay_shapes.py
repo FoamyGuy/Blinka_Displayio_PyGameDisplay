@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020 Tim C written for Adafruit Industries
+# SPDX-FileCopyrightText: 2020 Tim C
 #
 # SPDX-License-Identifier: Unlicense
 
@@ -79,5 +79,6 @@ roundrect.y += 270
 splash.append(roundrect)
 
 
-while display.running:
-    pass
+while True:
+    if display.check_quit():
+        break

@@ -37,7 +37,7 @@ progress_bar = ProgressBar(x, y, width, height, 1.0)
 splash.append(progress_bar)
 
 current_progress = 0.0
-while display.running:
+while True:
     # range end is exclusive so we need to use 1 bigger than max number that we want
     for current_progress in range(0, 101, 1):
         print("Progress: {}%".format(current_progress))
@@ -46,3 +46,6 @@ while display.running:
     time.sleep(0.3)
     progress_bar.progress = 0.0
     time.sleep(0.3)
+
+    if display.check_quit():
+        break
