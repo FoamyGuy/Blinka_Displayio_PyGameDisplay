@@ -32,6 +32,7 @@ __repo__ = "https://github.com/foamyguy/Foamyguy_CircuitPython_Blinka_Displayio_
 import time
 import threading
 from dataclasses import astuple
+from typing import Callable
 
 import displayio
 import pygame
@@ -154,8 +155,8 @@ class PyGameDisplay(displayio.Display):
     def event_loop(self, interval=None, on_time=None, on_event=None, events=None):
         """
         pygame event-loop. Has to be called by the main thread. This method
-        terminates in case of a QUIT-event. An optional callback `on_time` is
-        executed every `interval` seconds. Use this callback for
+        terminates in case of a QUIT-event. An optional callback on_time is
+        executed every interval seconds. Use this callback for
         application specific logic.
         """
         if events is None:
