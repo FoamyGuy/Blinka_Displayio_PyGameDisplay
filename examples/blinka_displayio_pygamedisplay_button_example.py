@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020 Tim C, written for Adafruit Industries
+# SPDX-FileCopyrightText: 2020 Tim C
 #
 # SPDX-License-Identifier: Unlicense
 """
@@ -60,7 +60,7 @@ button.body.fill = 0x0000FF
 # pylint: disable=no-member
 
 # Must check display.running in the main loop!
-while display.running:
+while True:
     # get mouse up  events
     ev = pygame.event.get(eventtype=pygame.MOUSEBUTTONUP)
     # proceed events
@@ -83,3 +83,6 @@ while display.running:
         print(pos)
         if button.contains(pos):
             button.selected = True
+
+    if display.check_quit():
+        break

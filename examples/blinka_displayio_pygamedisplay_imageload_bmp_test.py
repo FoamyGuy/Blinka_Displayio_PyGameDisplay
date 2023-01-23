@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020 Tim C, written for Adafruit Industries
+# SPDX-FileCopyrightText: 2020 Tim C
 #
 # SPDX-License-Identifier: Unlicense
 """
@@ -27,5 +27,6 @@ img_group.append(tile_grid)
 display.show(img_group)
 
 # Loop forever so you can enjoy your image
-while display.running:
-    pass
+while True:
+    if display.check_quit():
+        break

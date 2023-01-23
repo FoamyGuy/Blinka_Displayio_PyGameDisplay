@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020 Tim C, written for Adafruit Industries
+# SPDX-FileCopyrightText: 2020 Tim C
 #
 # SPDX-License-Identifier: Unlicense
 """
@@ -45,7 +45,7 @@ party = 0  #  time.monotonic() holder
 p = 0  #  index for tilegrid
 party_count = 0  #  count for animation cycles
 
-while display.running:
+while True:
     #  when a new tweet comes in...
     if parrot:
         #  every 0.1 seconds...
@@ -62,3 +62,6 @@ while display.running:
                 #  animation cycle count is updated
                 party_count += 1
                 print("party parrot", party_count)
+
+    if display.check_quit():
+        break

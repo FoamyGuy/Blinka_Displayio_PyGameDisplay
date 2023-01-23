@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020 Tim C, written for Adafruit Industries
+# SPDX-FileCopyrightText: 2020 Tim C
 #
 # SPDX-License-Identifier: Unlicense
 """
@@ -22,5 +22,6 @@ main_group.append(text_area)
 display.show(main_group)
 
 # text_area.y = 37
-while display.running:
-    pass
+while True:
+    if display.check_quit():
+        break

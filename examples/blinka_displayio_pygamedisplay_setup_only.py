@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020 Tim C, written for Adafruit Industries
+# SPDX-FileCopyrightText: 2020 Tim C
 #
 # SPDX-License-Identifier: Unlicense
 """
@@ -17,5 +17,6 @@ main_group = displayio.Group()
 display.show(main_group)
 
 
-while display.running:
-    pass
+while True:
+    if display.check_quit():
+        break

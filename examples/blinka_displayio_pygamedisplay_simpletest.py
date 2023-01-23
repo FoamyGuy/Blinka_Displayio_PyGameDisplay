@@ -1,11 +1,14 @@
-# SPDX-FileCopyrightText: 2020 Tim C, written for Adafruit Industries
+# SPDX-FileCopyrightText: 2020 Tim C
 #
 # SPDX-License-Identifier: Unlicense
 """
 Make green and purple rectangles and a
 "Hello World" label.
 """
+import time
+
 import displayio
+import rainbowio
 import terminalio
 from adafruit_display_text import label
 from blinka_displayio_pygamedisplay import PyGameDisplay
@@ -43,5 +46,14 @@ text_area.anchored_position = (display.width // 2, display.height // 2)
 # text_group.append(text_area)  # Subgroup for text scaling
 splash.append(text_area)
 
-while display.running:
-    pass
+color_num = 0
+while True:
+    text_area.color = rainbowio.colorwheel(color_num)
+    color_num += 1
+    if color_num > 255:
+        color_num = 0
+    print(time.monotonic())
+    time.sleep(0.05)
+
+    if display.check_quit():
+        break

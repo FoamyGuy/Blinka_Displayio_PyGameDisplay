@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020 Kevin Matocha, Tim C, written for Adafruit Industries
+# SPDX-FileCopyrightText: 2020 Kevin Matocha, Tim C
 #
 # SPDX-License-Identifier: Unlicense
 """
@@ -131,7 +131,7 @@ for i in range(TOTAL_TICKS + 1):
 display.show(my_group)
 
 # Start the main loop
-while display.running:
+while True:
 
     # Turn off auto_refresh to prevent partial updates of the screen during updates
     # of the sparkline drawing
@@ -148,3 +148,6 @@ while display.running:
     # The display seems to be less jittery if a small sleep time is provided
     # You can adjust this to see if it has any effect
     time.sleep(0.01)
+
+    if display.check_quit():
+        break

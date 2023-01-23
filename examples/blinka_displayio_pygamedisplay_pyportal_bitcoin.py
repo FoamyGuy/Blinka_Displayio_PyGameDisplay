@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2017 Scott Shawcroft, written for Adafruit Industries
+# SPDX-FileCopyrightText: 2020 Tim C
 #
 # SPDX-License-Identifier: Unlicense
 """
@@ -55,7 +55,7 @@ pyportal = PyPortal(
 pyportal.preload_font(b"$012345789")  # preload numbers
 pyportal.preload_font((0x00A3, 0x20AC))  # preload gbp/euro symbol
 
-while display.running:
+while True:
     try:
         value = pyportal.fetch()
         print("Response is", value)
@@ -63,3 +63,6 @@ while display.running:
         print("Some error occured, retrying! -", e)
 
     time.sleep(3 * 60)  # wait 3 minutes
+
+    if display.check_quit():
+        break
