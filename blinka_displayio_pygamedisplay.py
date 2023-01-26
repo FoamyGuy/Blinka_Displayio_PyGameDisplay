@@ -174,7 +174,6 @@ class PyGameDisplay(displayio.Display):
                 elif event.type in events:
                     # use callback for event-processing
                     on_event(event)
-            time.sleep(0.1)
             # execute application logic
             if on_time and time.monotonic() > next_time:
                 on_time()
