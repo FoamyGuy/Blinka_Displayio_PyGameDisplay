@@ -50,14 +50,17 @@ class PyGameDisplay(displayio.Display):
     hardware parameters.
     """
 
-    def __init__(self, icon=None, native_frames_per_second=60, **kwargs):
+    def __init__(self, icon=None, native_frames_per_second=60, flags=0, **kwargs):
         """
         icon - optional icon for the PyGame window
+        native_frames_per_second - high values result in high cpu-load
+        flags - pygame display-flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
         """
         self._native_frames_per_second = native_frames_per_second
         self._icon = None
         if icon:
             self._icon = icon
+        self._flags = flags
         self._subrectangles = []
 
         self._pygame_screen = None
@@ -87,7 +90,9 @@ class PyGameDisplay(displayio.Display):
 
         pygame.display.set_caption("Blinka Displayio PyGame")
 
-        self._pygame_screen = pygame.display.set_mode((self._width, self._height))
+        self._pygame_screen = pygame.display.set_mode(
+            size=(self._width, self._height), flags=self._flags
+        )
 
         # pygame-refresh loop
         while not self._pygame_display_tevent.is_set():
