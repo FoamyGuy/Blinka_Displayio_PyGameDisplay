@@ -59,6 +59,7 @@ class PyGameDisplay(displayio.Display):
         flags=0,
         **kwargs,
     ):
+        # pylint: disable=too-many-arguments
         """
         width  - width of the display. A value of zero maximizes the display
         height - height of the display. A value of zero maximizes the display
