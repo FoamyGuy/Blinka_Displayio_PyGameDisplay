@@ -86,7 +86,7 @@ class PyGameDisplay(displayio.Display):
         super().__init__(None, _INIT_SEQUENCE, width=width, height=height, **kwargs)
 
     def _get_screen_size(self):
-        # pylint: disable=unused-argument
+        # pylint: disable=no-self-use
         """autodetect screen-size: returns tuple (width,height)"""
 
         # a bit clumsy: we need to init and deinit pygame for this
