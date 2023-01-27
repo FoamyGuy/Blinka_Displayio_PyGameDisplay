@@ -50,8 +50,18 @@ class PyGameDisplay(displayio.Display):
     hardware parameters.
     """
 
-    def __init__(self, icon=None, native_frames_per_second=60, flags=0, **kwargs):
+    def __init__(
+        self,
+        width=0,
+        height=0,
+        icon=None,
+        native_frames_per_second=60,
+        flags=0,
+        **kwargs,
+    ):
         """
+        width  - width of the display. A value of zero maximizes the display
+        height - height of the display. A value of zero maximizes the display
         icon - optional icon for the PyGame window
         native_frames_per_second - high values result in high cpu-load
         flags - pygame display-flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
@@ -68,7 +78,20 @@ class PyGameDisplay(displayio.Display):
         self._pygame_display_tevent = threading.Event()
         self._pygame_display_force_update = False
 
-        super().__init__(None, _INIT_SEQUENCE, **kwargs)
+        if (flags & pygame.FULLSCREEN) or width == 0 or height == 0:
+            width, height = self._get_screen_size()
+
+        super().__init__(None, _INIT_SEQUENCE, width=width, height=height, **kwargs)
+
+    def _get_screen_size(self):
+        """autodetect screen-size: returns tuple (width,height)"""
+
+        # a bit clumsy: we need to init and deinit pygame for this
+        pygame.init()  # pylint: disable=no-member
+        width = pygame.display.get_desktop_sizes()[0][0]
+        height = pygame.display.get_desktop_sizes()[0][1]
+        pygame.quit()
+        return width, height
 
     def _initialize(self, init_sequence):
         # pylint: disable=unused-argument
