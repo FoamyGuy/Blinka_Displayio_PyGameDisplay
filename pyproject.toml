@@ -1,6 +1,51 @@
-# SPDX-FileCopyrightText: 2020 Diego Elio Pettenò
+# SPDX-FileCopyrightText: 2020 Tim C for foamyguy
 #
-# SPDX-License-Identifier: Unlicense
+# SPDX-License-Identifier: MIT
 
-[tool.black]
-target-version = ['py35']
+[build-system]
+requires = [
+    "setuptools",
+    "wheel",
+    "setuptools-scm",
+]
+
+[project]
+name = "blinka-displayio-pygamedisplay"
+description = "Use CircuitPython displayio code on PC and Raspberry Pi outputting to a PyGame window instead of a physical display."
+version = "0.0.0+auto.0"
+readme = "README.rst"
+authors = [
+    {name = "Tim C", email = "foamyguy@gmail.com"}
+]
+urls = {Homepage = "https://github.com/foamyguy/Blinka_Displayio_PyGameDisplay"}
+keywords = [
+    "adafruit",
+    "blinka",
+    "circuitpython",
+    "micropython",
+    "blinka_displayio_pygamedisplay",
+    "displayio",
+    "hdmi",
+    "pc",
+    "window",
+    "pygame",
+]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "Topic :: Software Development :: Libraries",
+        "Topic :: System :: Hardware",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+]
+dynamic = ["dependencies", "optional-dependencies"]
+
+[tool.setuptools]
+py-modules = ["blinka_displayio_pygamedisplay"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+optional-dependencies = {optional = {file = ["optional_requirements.txt"]}}
