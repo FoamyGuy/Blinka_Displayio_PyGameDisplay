@@ -35,12 +35,8 @@ from dataclasses import astuple
 import displayio
 import pygame
 from PIL import Image
-from recordclass import recordclass
 
 _INIT_SEQUENCE = None
-
-Rectangle = recordclass("Rectangle", "x1 y1 x2 y2")
-
 
 # pylint: disable=too-few-public-methods,too-many-instance-attributes
 class PyGameDisplay(displayio.Display):
