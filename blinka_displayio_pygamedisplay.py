@@ -26,7 +26,7 @@ Implementation Notes
 
 # imports
 
-__version__ = "0.0.0-auto.0"
+__version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/foamyguy/Foamyguy_CircuitPython_Blinka_Displayio_PyGameDisplay.git"
 
 import time
@@ -50,16 +50,28 @@ class PyGameDisplay(displayio.Display):
     hardware parameters.
     """
 
-    def __init__(self, icon=None, native_frames_per_second=60, flags=0, **kwargs):
+    def __init__(
+        self,
+        width=0,
+        height=0,
+        icon=None,
+        caption="Blinka Displayio PyGame",
+        native_frames_per_second=60,
+        flags=0,
+        **kwargs,
+    ):
+        # pylint: disable=too-many-arguments
         """
+        width  - width of the window. A value of zero maximizes the window
+        height - height of the window. A value of zero maximizes the window
         icon - optional icon for the PyGame window
+        caption - caption for the PyGame window
         native_frames_per_second - high values result in high cpu-load
         flags - pygame display-flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
         """
         self._native_frames_per_second = native_frames_per_second
-        self._icon = None
-        if icon:
-            self._icon = icon
+        self._icon = icon
+        self._caption = caption
         self._flags = flags
         self._subrectangles = []
 
@@ -68,7 +80,21 @@ class PyGameDisplay(displayio.Display):
         self._pygame_display_tevent = threading.Event()
         self._pygame_display_force_update = False
 
-        super().__init__(None, _INIT_SEQUENCE, **kwargs)
+        if (flags & pygame.FULLSCREEN) or width == 0 or height == 0:
+            width, height = self._get_screen_size()
+
+        super().__init__(None, _INIT_SEQUENCE, width=width, height=height, **kwargs)
+
+    def _get_screen_size(self):
+        # pylint: disable=no-self-use
+        """autodetect screen-size: returns tuple (width,height)"""
+
+        # a bit clumsy: we need to init and deinit pygame for this
+        pygame.init()  # pylint: disable=no-member
+        width = pygame.display.get_desktop_sizes()[0][0]
+        height = pygame.display.get_desktop_sizes()[0][1]
+        pygame.quit()
+        return width, height
 
     def _initialize(self, init_sequence):
         # pylint: disable=unused-argument
@@ -88,7 +114,8 @@ class PyGameDisplay(displayio.Display):
             icon = pygame.image.load(self._icon)
             pygame.display.set_icon(icon)
 
-        pygame.display.set_caption("Blinka Displayio PyGame")
+        if self._caption:
+            pygame.display.set_caption(self._caption)
 
         self._pygame_screen = pygame.display.set_mode(
             size=(self._width, self._height), flags=self._flags
