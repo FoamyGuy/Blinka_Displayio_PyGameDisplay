@@ -79,7 +79,7 @@ Usage Example
     from blinka_displayio_pygamedisplay import PyGameDisplay
 
     display = PyGameDisplay(width=320, height=240)
-    splash = displayio.Group(max_size=10)
+    splash = displayio.Group()
     display.show(splash)
 
     color_bitmap = displayio.Bitmap(display.width, display.height, 1)
@@ -89,8 +89,10 @@ Usage Example
     bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
     splash.append(bg_sprite)
     # Must check display.running in the main loop!
-    while display.running:
-        pass
+
+    while True:
+        if display.check_quit():
+            break
 
 Contributing
 ============
