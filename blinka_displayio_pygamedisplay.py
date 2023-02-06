@@ -42,7 +42,7 @@ _INIT_SEQUENCE = None
 Rectangle = recordclass("Rectangle", "x1 y1 x2 y2")
 
 
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods,too-many-instance-attributes
 class PyGameDisplay(displayio.Display):
     """PyGame display driver
 
