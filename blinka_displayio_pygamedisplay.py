@@ -186,6 +186,7 @@ class PyGameDisplay(displayio.Display):
         executed every interval seconds. Use this callback for
         application specific logic.
         """
+        print(".")
         if events is None:
             events = []
         if interval is None:
@@ -231,3 +232,12 @@ class PyGameDisplay(displayio.Display):
     @auto_refresh.setter
     def auto_refresh(self, value: bool):
         self._auto_refresh = value
+
+    @property
+    def root_group(self):
+        return self._root_group
+
+    @root_group.setter
+    def root_group(self, group):
+        self._root_group = group
+        self.show(group)
