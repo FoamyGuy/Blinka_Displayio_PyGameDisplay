@@ -235,6 +235,9 @@ class PyGameDisplay(displayio.Display):
 
     @property
     def root_group(self):
+        """
+        The root group on the display. If the root group is set to None, no output will be shown.
+        """
         return self._root_group
 
     @root_group.setter
