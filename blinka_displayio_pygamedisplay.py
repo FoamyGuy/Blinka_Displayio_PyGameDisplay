@@ -93,13 +93,7 @@ class PyGameDisplay(displayio.Display):
 
     def _initialize(self, init_sequence):
         # pylint: disable=unused-argument
-        # just start the pygame-refresh loop
-        self._pygame_display_thread = threading.Thread(
-            target=self._pygame_refresh, daemon=True
-        )
-        self._pygame_display_thread.start()
 
-    def _pygame_refresh(self):
         # initialize the pygame module
         pygame.init()  # pylint: disable=no-member
         # load and set the logo
@@ -112,10 +106,18 @@ class PyGameDisplay(displayio.Display):
         if self._caption:
             pygame.display.set_caption(self._caption)
 
+        # create the screen; must happen on main thread on macOS
         self._pygame_screen = pygame.display.set_mode(
             size=(self._width, self._height), flags=self._flags
         )
 
+        # just start the pygame-refresh loop
+        self._pygame_display_thread = threading.Thread(
+            target=self._pygame_refresh, daemon=True
+        )
+        self._pygame_display_thread.start()
+
+    def _pygame_refresh(self):
         # pygame-refresh loop
         while not self._pygame_display_tevent.is_set():
             time.sleep(1 / self._native_frames_per_second)
@@ -184,6 +186,7 @@ class PyGameDisplay(displayio.Display):
         executed every interval seconds. Use this callback for
         application specific logic.
         """
+        print(".")
         if events is None:
             events = []
         if interval is None:
@@ -229,3 +232,12 @@ class PyGameDisplay(displayio.Display):
     @auto_refresh.setter
     def auto_refresh(self, value: bool):
         self._auto_refresh = value
+
+    @property
+    def root_group(self):
+        return self._root_group
+
+    @root_group.setter
+    def root_group(self, group):
+        self._root_group = group
+        self.show(group)
