@@ -29,15 +29,28 @@ Implementation Notes
 __version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/foamyguy/Foamyguy_CircuitPython_Blinka_Displayio_PyGameDisplay.git"
 
+
+print("before import pygame")
+import pygame
+print("after import pygame")
+
+
 import time
 import threading
 from dataclasses import astuple
+import traceback
+
+print("before import displayio")
 import displayio
-import pygame
+print("after import displayio")
+from displayio._area import Area
+
+
 from PIL import Image
+print("after import PIL")
+_INIT_SEQUENCE = tuple()
 
-_INIT_SEQUENCE = None
-
+print("hello?")
 # pylint: disable=too-few-public-methods,too-many-instance-attributes
 class PyGameDisplay(displayio.Display):
     """PyGame display driver
@@ -79,8 +92,10 @@ class PyGameDisplay(displayio.Display):
         if (flags & pygame.FULLSCREEN) or width == 0 or height == 0:
             width, height = self._get_screen_size()
 
+        print("before super init")
         super().__init__(None, _INIT_SEQUENCE, width=width, height=height, **kwargs)
-
+        print("after super init")
+        self._initialize(_INIT_SEQUENCE)
     def _get_screen_size(self):
         """autodetect screen-size: returns tuple (width,height)"""
 
@@ -93,6 +108,8 @@ class PyGameDisplay(displayio.Display):
 
     def _initialize(self, init_sequence):
         # pylint: disable=unused-argument
+
+        print("inside _initialize()")
 
         # initialize the pygame module
         pygame.init()  # pylint: disable=no-member
@@ -108,40 +125,146 @@ class PyGameDisplay(displayio.Display):
 
         # create the screen; must happen on main thread on macOS
         self._pygame_screen = pygame.display.set_mode(
-            size=(self._width, self._height), flags=self._flags
+            size=(self.width, self.height), flags=self._flags
         )
 
+        time.sleep(3)
         # just start the pygame-refresh loop
         self._pygame_display_thread = threading.Thread(
             target=self._pygame_refresh, daemon=True
         )
         self._pygame_display_thread.start()
 
+    # def _pygame_refresh(self):
+    #
+    #     # pygame-refresh loop
+    #     while not self._pygame_display_tevent.is_set():
+    #         print("inside _pygame_refresh()")
+    #         time.sleep(1 / self._native_frames_per_second)
+    #         # refresh pygame-display
+    #         if not self._auto_refresh and not self._pygame_display_force_update:
+    #             pygame.display.flip()
+    #             continue
+    #
+    #         self._pygame_display_force_update = False
+    #
+    #         # Go through groups and and add each to buffer
+    #         if self._core.current_group is not None:
+    #             # buffer = Image.new("RGBA", (self._core.width, self._core.height))
+    #             # Recursively have everything draw to the image
+    #
+    #             buffer = memoryview(bytearray([0] * (buffer_size * 4))).cast("I")
+    #             mask = memoryview(bytearray([0] * (mask_length * 4))).cast("I")
+    #
+    #             self._core.current_group._fill_area(
+    #                 buffer
+    #             )  # pylint: disable=protected-access
+    #             # save image to buffer (or probably refresh buffer so we can compare)
+    #             self._buffer.paste(buffer)
+    #
+    #         self._subrectangles = self._core.get_refresh_areas()
+    #         for area in self._subrectangles:
+    #             self._refresh_display_area(area)
+
     def _pygame_refresh(self):
-        # pygame-refresh loop
-        while not self._pygame_display_tevent.is_set():
-            time.sleep(1 / self._native_frames_per_second)
-            # refresh pygame-display
-            if not self._auto_refresh and not self._pygame_display_force_update:
-                pygame.display.flip()
-                continue
+        self._refresh_display()
+        pass
 
-            self._pygame_display_force_update = False
 
-            # Go through groups and and add each to buffer
-            if self._core._current_group is not None:
-                buffer = Image.new("RGBA", (self._core._width, self._core._height))
-                # Recursively have everything draw to the image
+    def _refresh_area(self, area) -> bool:
+        """Loop through dirty areas and redraw that area."""
+        # pylint: disable=too-many-locals, too-many-branches
 
-                self._core._current_group._fill_area(
-                    buffer
-                )  # pylint: disable=protected-access
-                # save image to buffer (or probably refresh buffer so we can compare)
-                self._buffer.paste(buffer)
+        print("INSIDE overridden _refresh_area()")
+        print("area: ")
+        print(area)
+        clipped = Area()
+        # Clip the area to the display by overlapping the areas.
+        # If there is no overlap then we're done.
+        if not self._core.clip_area(area, clipped):
+            return True
 
-            self._subrectangles = self._core.get_refresh_areas()
-            for area in self._subrectangles:
-                self._refresh_display_area(area)
+        rows_per_buffer = clipped.height()
+        pixels_per_word = 32 // self._core.colorspace.depth
+        pixels_per_buffer = clipped.size()
+
+        # We should have lots of memory
+        buffer_size = clipped.size() // pixels_per_word
+
+        subrectangles = 1
+        # for SH1107 and other boundary constrained controllers
+        #      write one single row at a time
+        if self._core.sh1107_addressing:
+            subrectangles = rows_per_buffer // 8
+            rows_per_buffer = 8
+        elif clipped.size() > buffer_size * pixels_per_word:
+            rows_per_buffer = buffer_size * pixels_per_word // clipped.width()
+            if rows_per_buffer == 0:
+                rows_per_buffer = 1
+            # If pixels are packed by column then ensure rows_per_buffer is on a byte boundary
+            if (
+                self._core.colorspace.depth < 8
+                and self._core.colorspace.pixels_in_byte_share_row
+            ):
+                pixels_per_byte = 8 // self._core.colorspace.depth
+                if rows_per_buffer % pixels_per_byte != 0:
+                    rows_per_buffer -= rows_per_buffer % pixels_per_byte
+            subrectangles = clipped.height() // rows_per_buffer
+            if clipped.height() % rows_per_buffer != 0:
+                subrectangles += 1
+            pixels_per_buffer = rows_per_buffer * clipped.width()
+            buffer_size = pixels_per_buffer // pixels_per_word
+            if pixels_per_buffer % pixels_per_word:
+                buffer_size += 1
+        mask_length = (pixels_per_buffer // 32) + 1  # 1 bit per pixel + 1
+        remaining_rows = clipped.height()
+
+        for subrect_index in range(subrectangles):
+            subrectangle = Area(
+                x1=clipped.x1,
+                y1=clipped.y1 + rows_per_buffer * subrect_index,
+                x2=clipped.x2,
+                y2=clipped.y1 + rows_per_buffer * (subrect_index + 1),
+            )
+            if remaining_rows < rows_per_buffer:
+                subrectangle.y2 = subrectangle.y1 + remaining_rows
+            remaining_rows -= rows_per_buffer
+            # self._core.set_region_to_update(subrectangle)
+            # if self._core.colorspace.depth >= 8:
+            #     subrectangle_size_bytes = subrectangle.size() * (
+            #         self._core.colorspace.depth // 8
+            #     )
+            # else:
+            #     subrectangle_size_bytes = subrectangle.size() // (
+            #         8 // self._core.colorspace.depth
+            #     )
+
+            print("subrectangle:")
+            print(subrectangle)
+            buffer = memoryview(bytearray([0] * (buffer_size * 4)))# .cast("I")
+            mask = memoryview(bytearray([0] * (mask_length * 4))).cast("I")
+            self._core.fill_area(subrectangle, mask, buffer)
+            print("Buffer:")
+            print(len(buffer))
+            print(buffer.tobytes())
+            print(dir(buffer))
+            # print("mask:")
+            # print(mask.tobytes())
+
+            #img = Image.frombuffer("RGB", (400, 300), buffer, "raw", "RGB;16", 0, 1)
+            #img = img.convert("RGB")
+            img = Image.frombytes("RGB", (400, 300), buffer.tobytes(), "raw","RGB;16", 0, 1)
+            img.save("_tmp.png")
+            print(img)
+
+            # Can't acquire display bus; skip the rest of the data.
+            # if not self._core.bus_free():
+            #     return False
+
+            # self._core.begin_transaction()
+            # self._send_pixels(buffer.tobytes()[:subrectangle_size_bytes])
+            # self._core.end_transaction()
+        return True
 
     def _write(self, command, data):
         pass
@@ -175,7 +298,9 @@ class PyGameDisplay(displayio.Display):
                     self._pygame_display_thread.join()
                     pygame.quit()
                     return True
-        except pygame.error:
+        except pygame.error as e:
+            print("pygame error during check_quit()")
+            print(traceback.format_exc())
             return True
         return False
 
