@@ -3,5 +3,5 @@
 #
 # SPDX-License-Identifier: MIT
 
-adafruit-blinka-displayio
+adafruit-blinka-displayio==0.11.1
 pygame>=2.1.3dev8

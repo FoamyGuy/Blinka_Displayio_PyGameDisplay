@@ -20,6 +20,13 @@ Introduction
 .. image:: https://github.com/FoamyGuy/Blinka_Displayio_PyGameDisplay/blob/main/banner.png?raw=true
     :alt: PyGame + Blinka
 
+VERSION NOTICE
+==============
+This library has not been updated to work with Blinka_DisplayIO 1.0.0+ yet. The most recent version of Bliaka_DisplayIO that is supported is `0.11.1`
+
+Info
+====
+
 Blinka makes her debut on the big screen! With this library you can use CircuitPython ``displayio`` code on PC and Raspberry Pi to output to a PyGame window instead of a hardware display connected to I2C or SPI. This makes it easy to to use ``displayio`` elements on HDMI and other large format screens.
 
 Warning: you must check ``display.check_quit()`` in the main loop and ``break`` if it's true in order to correctly handle the close button!
