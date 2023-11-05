@@ -22,7 +22,7 @@ Introduction
 
 VERSION NOTICE
 ==============
-This library has not been updated to work with Blinka_DisplayIO 1.0.0+ yet. The most recent version of Bliaka_DisplayIO that is supported is `0.11.1`
+This library has not been updated to work with Blinka_DisplayIO 1.0.0+ yet. The most recent version of Bliaka_DisplayIO that is supported is 0.11.1.
 
 Info
 ====
