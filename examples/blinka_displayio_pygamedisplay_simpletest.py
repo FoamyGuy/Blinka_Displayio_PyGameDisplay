@@ -5,22 +5,18 @@
 Make green and purple rectangles and a
 "Hello World" label.
 """
-print("before imports")
+
 import time
-
-print("before import pygamedisplay")
 from blinka_displayio_pygamedisplay import PyGameDisplay
-print("after import pygamedisplay")
-
 import rainbowio
 from adafruit_display_text import label
 import displayio
 import terminalio
 
-print("before make display?")
 # Make the display context
-display = PyGameDisplay(icon="blinka.png", width=400, height=300)
-print("after made display")
+display = PyGameDisplay(icon="blinka.png", width=400, height=300, auto_refresh=True)
+# display.auto_refresh = False
+
 # Make the display context
 splash = displayio.Group()
 display.show(splash)
@@ -49,13 +45,17 @@ text_area.anchored_position = (display.width // 2, display.height // 2)
 
 # text_group.append(text_area)  # Subgroup for text scaling
 splash.append(text_area)
+# time.sleep(2)
+# display.refresh()
+
 
 color_num = 0
 while True:
-    # text_area.color = rainbowio.colorwheel(color_num)
-    # color_num += 1
-    # if color_num > 255:
-    #     color_num = 0
+    text_area.color = rainbowio.colorwheel(color_num)
+    color_num += 1
+    if color_num > 255:
+        color_num = 0
+    # display.refresh()
     #print(time.monotonic())
     time.sleep(0.05)
 

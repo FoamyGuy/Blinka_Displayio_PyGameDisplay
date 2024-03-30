@@ -31,28 +31,16 @@ __repo__ = "https://github.com/foamyguy/Foamyguy_CircuitPython_Blinka_Displayio_
 
 
 
-print("before import pygame")
 import pygame
-print("after import pygame")
-
 import numpy as np
 import time
-import threading
+#import threading
 from dataclasses import astuple
 import traceback
-
-print("before import displayio")
 import displayio
-
-print("after import displayio")
 from displayio._area import Area
 
 _INIT_SEQUENCE = tuple()
-
-print("hello?")
-
-
-
 
 # pylint: disable=too-few-public-methods,too-many-instance-attributes
 class PyGameDisplay(displayio.Display):
@@ -89,7 +77,7 @@ class PyGameDisplay(displayio.Display):
 
         self._pygame_screen = None
         self._pygame_display_thread = None
-        self._pygame_display_tevent = threading.Event()
+        #self._pygame_display_tevent = threading.Event()
         self._pygame_display_force_update = False
 
         if (flags & pygame.FULLSCREEN) or width == 0 or height == 0:
@@ -99,6 +87,14 @@ class PyGameDisplay(displayio.Display):
         super().__init__(None, _INIT_SEQUENCE, width=width, height=height, **kwargs)
         print("after super init")
         self._initialize(_INIT_SEQUENCE)
+        
+        # if not self.auto_refresh:
+        #     print("dummy refresh()")
+        #     # first manual refresh does not do anything.
+        #     # so do it here that way first one from user code
+        #     # works.
+        #     self.refresh()
+        #     time.sleep(0.3)
 
     def _get_screen_size(self):
         """autodetect screen-size: returns tuple (width,height)"""
@@ -134,18 +130,27 @@ class PyGameDisplay(displayio.Display):
 
         #time.sleep(3)
         # just start the pygame-refresh loop
-        self._pygame_display_thread = threading.Thread(
-            target=self._pygame_refresh, daemon=True
-        )
-        self._pygame_display_thread.start()
+        
+        # self._pygame_display_thread = threading.Thread(
+        #     target=self._pygame_refresh, daemon=True
+        # )
+        # self._pygame_display_thread.start()
 
     def _pygame_refresh(self):
         while not self._pygame_display_tevent.is_set():
-            if not self._auto_refresh and not self._pygame_display_force_update:
+            #print(f"{time.monotonic()} - auto_refresh: {self._auto_refresh} force update: {self._pygame_display_force_update}")
+            # if not self._auto_refresh and not self._pygame_display_force_update:
+            #     pygame.display.flip()
+            #     continue
+            
+            if self._auto_refresh or self._pygame_display_force_update:
+                # self._refresh_display()
+                # time.sleep(1 / self._native_frames_per_second)
+                #print("calling flip")
                 pygame.display.flip()
-                continue
-            time.sleep(1 / self._native_frames_per_second)
-            self._refresh_display()
+                self._pygame_display_force_update = False
+                time.sleep(1 / self._native_frames_per_second)
+                self._refresh_display()
 
 
     def _refresh_area(self, area) -> bool:
@@ -162,7 +167,7 @@ class PyGameDisplay(displayio.Display):
             arr = np.column_stack((r, g, b)).flat[0:]
             return pygame.image.frombuffer(arr, size, 'RGB')
 
-        # print("INSIDE overridden _refresh_area()")
+        print("INSIDE overridden _refresh_area()")
         # print("area: ")
         # print(area)
         clipped = Area()
@@ -223,7 +228,7 @@ class PyGameDisplay(displayio.Display):
 
             image_surface = rgb_to_surface(bytes(buffer), (subrectangle.width(), subrectangle.height()))
             self._pygame_screen.blit(image_surface, (subrectangle.x1, subrectangle.y1))
-            pygame.display.flip()
+            #pygame.display.flip()
             time.sleep(0.1)
             
         return True
@@ -245,9 +250,20 @@ class PyGameDisplay(displayio.Display):
         the pygame-display was created on another thread.
         """
         # pylint: disable=no-member, unused-argument, protected-access
-        if not self._auto_refresh:
-            self._pygame_display_force_update = True
+        #print("inside refresh()")
+        # if not self._auto_refresh:
+        #     self._pygame_display_force_update = True
 
+        print("calling flip")
+        self._refresh_display()
+        self._pygame_display_force_update = False
+        time.sleep(1 / self._native_frames_per_second)
+        pygame.display.flip()
+
+    def _get_refresh_areas(self) -> list[Area]:
+        areas = []
+        areas.append(self._core.area)
+        return areas
     def check_quit(self):
         """
         Check if the quit button on the window is being pressed.
@@ -331,3 +347,26 @@ class PyGameDisplay(displayio.Display):
     def root_group(self, group):
         self._root_group = group
         self.show(group)
+    
+    def _background(self):
+        try:
+            super()._background()
+            
+            # if self._auto_refresh or self._pygame_display_force_update:
+            #     # self._refresh_display()
+            #     # time.sleep(1 / self._native_frames_per_second)
+            #     print("calling flip")
+            # 
+            #     self._refresh_display()
+            #     self._pygame_display_force_update = False
+            #     time.sleep(1 / self._native_frames_per_second)
+            #     
+            #     pygame.display.flip()
+            
+            #if self._auto_refresh and 
+            
+        except AttributeError:
+            # background refresh thread attempted to access
+            # display properties before the init() was complete
+            pass
+            
