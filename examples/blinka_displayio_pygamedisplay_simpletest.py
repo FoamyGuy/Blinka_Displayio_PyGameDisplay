@@ -14,8 +14,8 @@ import displayio
 import terminalio
 
 # Make the display context
-display = PyGameDisplay(icon="blinka.png", width=400, height=300, auto_refresh=True)
-# display.auto_refresh = False
+display = PyGameDisplay(icon="blinka.png", width=400, height=300, auto_refresh=False)
+#display.auto_refresh = False
 
 # Make the display context
 splash = displayio.Group()
@@ -46,7 +46,7 @@ text_area.anchored_position = (display.width // 2, display.height // 2)
 # text_group.append(text_area)  # Subgroup for text scaling
 splash.append(text_area)
 # time.sleep(2)
-# display.refresh()
+display.refresh()
 
 
 color_num = 0
@@ -55,7 +55,7 @@ while True:
     color_num += 1
     if color_num > 255:
         color_num = 0
-    # display.refresh()
+    display.refresh()
     #print(time.monotonic())
     time.sleep(0.05)
 
