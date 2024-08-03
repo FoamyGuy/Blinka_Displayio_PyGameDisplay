@@ -23,7 +23,7 @@ display = PyGameDisplay(icon="blinka.png", width=400, height=300)
 print("after made display")
 # Make the display context
 splash = displayio.Group()
-display.show(splash)
+display.root_group = (splash)
 
 # Draw a green background
 color_bitmap = displayio.Bitmap(display.width, display.height, 1)

@@ -55,7 +55,7 @@ print("hello?")
 
 
 # pylint: disable=too-few-public-methods,too-many-instance-attributes
-class PyGameDisplay(displayio.Display):
+class PyGameDisplay():
     """PyGame display driver
 
     Represents one PyGame window. Uses None for all display
@@ -155,7 +155,8 @@ class PyGameDisplay(displayio.Display):
 
         def rgb_to_surface(buff, size):
             """convert RGB 565 buffer data to pygame Image"""
-            arr = np.fromstring(buff, dtype=np.uint16).newbyteorder('S')
+            arr = np.fromstring(buff, dtype=np.uint16)
+            arr = arr.view(arr.dtype.newbyteorder('S'))
             r = (((arr & 0xF800) >> 11) * 255.0 / 31.0).astype(np.uint8)
             g = (((arr & 0x07E0) >> 5) * 255.0 / 63.0).astype(np.uint8)
             b = (((arr & 0x001F) >> 0) * 255.0 / 31.0).astype(np.uint8)
@@ -320,14 +321,14 @@ class PyGameDisplay(displayio.Display):
     def auto_refresh(self, value: bool):
         self._auto_refresh = value
 
-    @property
-    def root_group(self):
-        """
-        The root group on the display. If the root group is set to None, no output will be shown.
-        """
-        return self._root_group
-
-    @root_group.setter
-    def root_group(self, group):
-        self._root_group = group
-        self.show(group)
+    # @property
+    # def root_group(self):
+    #     """
+    #     The root group on the display. If the root group is set to None, no output will be shown.
+    #     """
+    #     return self._root_group
+    #
+    # @root_group.setter
+    # def root_group(self, group):
+    #     self._root_group = group
+    #     #self.show(group)
