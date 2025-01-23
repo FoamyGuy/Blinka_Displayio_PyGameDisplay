@@ -113,11 +113,12 @@ Initialization Parameters
 * ``hw_accel`` (optional) - Whether to use hardware acceleration. Default is True
 * ``flags`` (optional) - Pygame display flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
 
-``scale`` can be used to make smaller windows easier to see on high resolution displays.
+Scale can be used to make smaller displays easier to see on high resolution displays.
 The actual window dimensions are ``width * scale`` by ``height * scale``, however the display dimensions remain ``width`` by ``height``.
-To ensure the accuracy of the display, only integer upscaling is supported (``scale >= 1``).
 
-If you encounter GL or EGL Pygame errors, try setting ``hw_accel`` to False. Performance will likely be worse.
+To ensure pixel accuracy of the display, only integer upscaling is supported (``scale >= 1``).
+
+If you encounter GL or EGL Pygame errors, try setting ``hw_accel`` to False to disable hardware acceleration. Performance may be reduced.
 
 Contributing
 ============
