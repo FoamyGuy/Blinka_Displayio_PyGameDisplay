@@ -54,6 +54,8 @@ class PyGameDisplay(displayio.Display):
         caption="Blinka Displayio PyGame",
         native_frames_per_second=60,
         flags=0,
+        scale=1,
+        hw_accel=True,
         **kwargs,
     ):
         # pylint: disable=too-many-arguments
@@ -63,11 +65,15 @@ class PyGameDisplay(displayio.Display):
         icon - optional icon for the PyGame window
         caption - caption for the PyGame window
         native_frames_per_second - high values result in high cpu-load
+        scale - positive scaling factor for the window. Default is 1
+        hw_accel - whether to use hardware acceleration. Default is True
         flags - pygame display-flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
         """
         self._native_frames_per_second = native_frames_per_second
         self._icon = icon
         self._caption = caption
+        self._scale = scale
+        self._hw_accel = hw_accel
         self._flags = flags
         self._subrectangles = []
 
@@ -76,10 +82,14 @@ class PyGameDisplay(displayio.Display):
         self._pygame_display_tevent = threading.Event()
         self._pygame_display_force_update = False
 
+        if not isinstance(scale, int) or scale < 1:
+            raise ValueError("Scale must be an integer greater than zero")
+
         if (flags & pygame.FULLSCREEN) or width == 0 or height == 0:
             width, height = self._get_screen_size()
+            self._scale = 1
 
-        super().__init__(None, _INIT_SEQUENCE, width=width, height=height, **kwargs)
+        super().__init__(None, _INIT_SEQUENCE, width=width * scale, height=height * scale, **kwargs)
 
     def _get_screen_size(self):
         """autodetect screen-size: returns tuple (width,height)"""
@@ -96,6 +106,8 @@ class PyGameDisplay(displayio.Display):
 
         # initialize the pygame module
         pygame.init()  # pylint: disable=no-member
+        if not self._hw_accel: # disable hardware acceleration
+            pygame.display.gl_set_attribute(pygame.GL_ACCELERATED_VISUAL, 0)
         # load and set the logo
 
         if self._icon:
@@ -136,6 +148,14 @@ class PyGameDisplay(displayio.Display):
                 self._core._current_group._fill_area(
                     buffer
                 )  # pylint: disable=protected-access
+
+                # Scale the image if needed
+                if self._scale != 1:
+                    buffer = buffer.resize(
+                        (buffer.width * self._scale, buffer.height * self._scale),
+                        resample=Image.NEAREST
+                    )
+                    
                 # save image to buffer (or probably refresh buffer so we can compare)
                 self._buffer.paste(buffer)
 

@@ -101,6 +101,24 @@ Usage Example
         if display.check_quit():
             break
 
+Initialization Parameters
+=========================
+
+* ``width`` (required) - The width of the window. A value of zero maximizes the window
+* ``height`` (required) - The height of the window. A value of zero maximizes the window
+* ``icon`` (optional) - An icon for the PyGame window
+* ``caption`` (optional) - A caption for the PyGame window
+* ``native_frames_per_second`` (optional) - High values result in high CPU load
+* ``scale`` (optional) - A positive scaling factor for the window. Default is 1
+* ``hw_accel`` (optional) - Whether to use hardware acceleration. Default is True
+* ``flags`` (optional) - Pygame display flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
+
+``scale`` can be used to make smaller windows easier to see on high resolution displays.
+The actual window dimensions are ``width * scale`` by ``height * scale``, however the display dimensions remain ``width`` by ``height``.
+To ensure the accuracy of the display, only integer upscaling is supported (``scale >= 1``).
+
+If you encounter GL or EGL Pygame errors, try setting ``hw_accel`` to False. Performance will likely be worse.
+
 Contributing
 ============
 
