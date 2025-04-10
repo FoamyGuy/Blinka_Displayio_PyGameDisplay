@@ -14,7 +14,7 @@ display = PyGameDisplay(width=320, height=240, auto_refresh=False)
 
 # Make the display context
 main_group = displayio.Group()
-display.show(main_group)
+display.root_group = main_group
 
 
 display.refresh()

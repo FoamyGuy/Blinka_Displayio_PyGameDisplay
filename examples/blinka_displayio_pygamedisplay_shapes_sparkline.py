@@ -16,7 +16,7 @@ library to work with pygame display.
 # using `add_value` are plotted.
 #
 # The `sparkline` class creates an element suitable for adding to the display
-# using `display.show(mySparkline)` or adding to a `displayio.Group` to be displayed.
+# using `display.root_group = mySparkline` or adding to a `displayio.Group` to be displayed.
 #
 # When creating the sparkline, identify the number of `max_items` that will be
 # included in the graph.
@@ -128,7 +128,7 @@ for i in range(TOTAL_TICKS + 1):
 
 
 # Set the display to show my_group that contains the sparkline and other graphics
-display.show(my_group)
+display.root_group = my_group
 
 # Start the main loop
 while True:
@@ -142,8 +142,7 @@ while True:
     # values (between 0 and 10) will fit within the visible range of this sparkline
     sparkline1.add_value(random.uniform(0, 10))
 
-    # Turn on auto_refresh for the display
-    # display.auto_refresh = True
+    display.refresh()
 
     # The display seems to be less jittery if a small sleep time is provided
     # You can adjust this to see if it has any effect

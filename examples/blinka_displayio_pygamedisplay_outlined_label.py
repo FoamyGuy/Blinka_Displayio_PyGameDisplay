@@ -30,7 +30,7 @@ text_area.anchored_position = (20, 10)
 
 # Make the display context
 main_group = displayio.Group()
-display.show(main_group)
+display.root_group = main_group
 
 main_group.append(text_area)
 

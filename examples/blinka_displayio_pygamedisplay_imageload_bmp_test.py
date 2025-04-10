@@ -24,8 +24,8 @@ img_group = displayio.Group()
 img_group.append(tile_grid)
 
 # Add the Group to the Display
-display.show(img_group)
-
+display.root_group = img_group
+display.refresh()
 # Loop forever so you can enjoy your image
 while True:
     if display.check_quit():

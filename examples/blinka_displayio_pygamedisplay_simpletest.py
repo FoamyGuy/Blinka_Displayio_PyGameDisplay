@@ -19,7 +19,7 @@ display = PyGameDisplay(icon="blinka.png", width=400, height=300, auto_refresh=F
 
 # Make the display context
 splash = displayio.Group()
-display.show(splash)
+display.root_group = splash
 
 # Draw a green background
 color_bitmap = displayio.Bitmap(display.width, display.height, 1)
@@ -48,16 +48,15 @@ splash.append(text_area)
 # time.sleep(2)
 display.refresh()
 
-
 color_num = 0
 while True:
     text_area.color = rainbowio.colorwheel(color_num)
-    color_num += 1
+    color_num += 16
     if color_num > 255:
         color_num = 0
     display.refresh()
     #print(time.monotonic())
-    time.sleep(0.05)
+    #time.sleep(0.05)
 
     if display.check_quit():
         print("check_quit() was true")

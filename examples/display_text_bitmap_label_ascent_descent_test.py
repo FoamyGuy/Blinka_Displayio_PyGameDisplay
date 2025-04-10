@@ -31,9 +31,9 @@ label.anchor_point = (0, 0)
 label.anchored_position = (0, 20)
 
 group.append(label)
-display.show(group)
+display.root_group = group
 
-
+display.refresh()
 while True:
     if display.check_quit():
         break

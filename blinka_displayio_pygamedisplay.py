@@ -58,6 +58,7 @@ class PyGameDisplay(displayio.Display):
             caption="Blinka Displayio PyGame",
             native_frames_per_second=60,
             flags=0,
+            auto_refresh=False,
             **kwargs,
     ):
         # pylint: disable=too-many-arguments
@@ -69,6 +70,10 @@ class PyGameDisplay(displayio.Display):
         native_frames_per_second - high values result in high cpu-load
         flags - pygame display-flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
         """
+
+        if auto_refresh == True:
+            raise NotImplemented("AutoRefresh not supported.")
+
         self._native_frames_per_second = native_frames_per_second
         self._icon = icon
         self._caption = caption
@@ -84,7 +89,7 @@ class PyGameDisplay(displayio.Display):
             width, height = self._get_screen_size()
 
         print("before super init")
-        super().__init__(None, _INIT_SEQUENCE, width=width, height=height, **kwargs)
+        super().__init__(None, _INIT_SEQUENCE, width=width, height=height, auto_refresh=False, **kwargs)
         print("after super init")
         self._initialize(_INIT_SEQUENCE)
         
@@ -160,14 +165,17 @@ class PyGameDisplay(displayio.Display):
 
         def rgb_to_surface(buff, size):
             """convert RGB 565 buffer data to pygame Image"""
-            arr = np.fromstring(buff, dtype=np.uint16).newbyteorder('S')
+            # arr = np.fromstring(buff, dtype=np.uint16).newbyteorder('S')
+            # arr = np.fromstring(buff, dtype=np.uint16).view(np.uint16().newbyteorder('S'))
+            dtype_swapped = np.dtype(np.uint16).newbyteorder('S')
+            arr = np.fromstring(buff, dtype=np.uint16).view(dtype_swapped)
             r = (((arr & 0xF800) >> 11) * 255.0 / 31.0).astype(np.uint8)
             g = (((arr & 0x07E0) >> 5) * 255.0 / 63.0).astype(np.uint8)
             b = (((arr & 0x001F) >> 0) * 255.0 / 31.0).astype(np.uint8)
             arr = np.column_stack((r, g, b)).flat[0:]
             return pygame.image.frombuffer(arr, size, 'RGB')
 
-        print("INSIDE overridden _refresh_area()")
+        #print("INSIDE overridden _refresh_area()")
         # print("area: ")
         # print(area)
         clipped = Area()
@@ -229,7 +237,7 @@ class PyGameDisplay(displayio.Display):
             image_surface = rgb_to_surface(bytes(buffer), (subrectangle.width(), subrectangle.height()))
             self._pygame_screen.blit(image_surface, (subrectangle.x1, subrectangle.y1))
             #pygame.display.flip()
-            time.sleep(0.1)
+            #time.sleep(0.1)
             
         return True
 
@@ -254,10 +262,8 @@ class PyGameDisplay(displayio.Display):
         # if not self._auto_refresh:
         #     self._pygame_display_force_update = True
 
-        print("calling flip")
         self._refresh_display()
         self._pygame_display_force_update = False
-        time.sleep(1 / self._native_frames_per_second)
         pygame.display.flip()
 
     def _get_refresh_areas(self) -> list[Area]:
@@ -336,17 +342,17 @@ class PyGameDisplay(displayio.Display):
     def auto_refresh(self, value: bool):
         self._auto_refresh = value
 
-    @property
-    def root_group(self):
-        """
-        The root group on the display. If the root group is set to None, no output will be shown.
-        """
-        return self._root_group
-
-    @root_group.setter
-    def root_group(self, group):
-        self._root_group = group
-        self.show(group)
+    # @property
+    # def root_group(self):
+    #     """
+    #     The root group on the display. If the root group is set to None, no output will be shown.
+    #     """
+    #     return self._root_group
+    #
+    # @root_group.setter
+    # def root_group(self, group):
+    #     self._root_group = group
+    #     self.show(group)
     
     def _background(self):
         try:
