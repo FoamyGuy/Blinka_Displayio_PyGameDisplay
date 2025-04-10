@@ -20,9 +20,10 @@ Introduction
 .. image:: https://github.com/FoamyGuy/Blinka_Displayio_PyGameDisplay/blob/main/banner.png?raw=true
     :alt: PyGame + Blinka
 
-VERSION NOTICE
-==============
-This library has not been updated to work with Blinka_DisplayIO 1.0.0+ yet. The most recent version of Bliaka_DisplayIO that is supported is 0.11.1.
+Auto Refresh Notice
+===================
+This library does not currently support auto refresh for displays. User code must call ``display.refresh()``
+in order to refresh the display.
 
 Info
 ====
@@ -109,14 +110,8 @@ Initialization Parameters
 * ``icon`` (optional) - An icon for the PyGame window
 * ``caption`` (optional) - A caption for the PyGame window
 * ``native_frames_per_second`` (optional) - High values result in high CPU load
-* ``scale`` (optional) - A positive scaling factor for the window. Default is 1
 * ``hw_accel`` (optional) - Whether to use hardware acceleration. Default is True
 * ``flags`` (optional) - Pygame display flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
-
-Scale can be used to make smaller displays easier to see on high resolution displays.
-The actual window dimensions are ``width * scale`` by ``height * scale``, however the display dimensions remain ``width`` by ``height``.
-
-To ensure pixel accuracy of the display, only integer upscaling is supported (``scale >= 1``).
 
 If you encounter GL or EGL Pygame errors, try setting ``hw_accel`` to False to disable hardware acceleration. Performance may be reduced.
 
