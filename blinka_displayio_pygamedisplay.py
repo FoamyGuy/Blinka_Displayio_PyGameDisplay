@@ -51,15 +51,16 @@ class PyGameDisplay(displayio.Display):
     """
 
     def __init__(
-            self,
-            width=0,
-            height=0,
-            icon=None,
-            caption="Blinka Displayio PyGame",
-            native_frames_per_second=60,
-            flags=0,
-            auto_refresh=False,
-            **kwargs,
+        self,
+        width=0,
+        height=0,
+        icon=None,
+        caption="Blinka Displayio PyGame",
+        native_frames_per_second=60,
+        flags=0,
+        hw_accel=True,
+        auto_refresh=False,
+        **kwargs,
     ):
         # pylint: disable=too-many-arguments
         """
@@ -68,6 +69,7 @@ class PyGameDisplay(displayio.Display):
         icon - optional icon for the PyGame window
         caption - caption for the PyGame window
         native_frames_per_second - high values result in high cpu-load
+        hw_accel - whether to use hardware acceleration. Default is True
         flags - pygame display-flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
         """
 
@@ -77,6 +79,7 @@ class PyGameDisplay(displayio.Display):
         self._native_frames_per_second = native_frames_per_second
         self._icon = icon
         self._caption = caption
+        self._hw_accel = hw_accel
         self._flags = flags
         self._subrectangles = []
 
@@ -92,7 +95,7 @@ class PyGameDisplay(displayio.Display):
         super().__init__(None, _INIT_SEQUENCE, width=width, height=height, auto_refresh=False, **kwargs)
         print("after super init")
         self._initialize(_INIT_SEQUENCE)
-        
+
         # if not self.auto_refresh:
         #     print("dummy refresh()")
         #     # first manual refresh does not do anything.
@@ -114,10 +117,10 @@ class PyGameDisplay(displayio.Display):
     def _initialize(self, init_sequence):
         # pylint: disable=unused-argument
 
-        print("inside _initialize()")
-
         # initialize the pygame module
         pygame.init()  # pylint: disable=no-member
+        if not self._hw_accel: # disable hardware acceleration
+            pygame.display.gl_set_attribute(pygame.GL_ACCELERATED_VISUAL, 0)
         # load and set the logo
 
         if self._icon:
@@ -133,9 +136,8 @@ class PyGameDisplay(displayio.Display):
             size=(self.width, self.height), flags=self._flags
         )
 
-        #time.sleep(3)
         # just start the pygame-refresh loop
-        
+
         # self._pygame_display_thread = threading.Thread(
         #     target=self._pygame_refresh, daemon=True
         # )
@@ -147,7 +149,7 @@ class PyGameDisplay(displayio.Display):
             # if not self._auto_refresh and not self._pygame_display_force_update:
             #     pygame.display.flip()
             #     continue
-            
+
             if self._auto_refresh or self._pygame_display_force_update:
                 # self._refresh_display()
                 # time.sleep(1 / self._native_frames_per_second)
@@ -238,7 +240,7 @@ class PyGameDisplay(displayio.Display):
             self._pygame_screen.blit(image_surface, (subrectangle.x1, subrectangle.y1))
             #pygame.display.flip()
             #time.sleep(0.1)
-            
+
         return True
 
     def _write(self, command, data):
@@ -353,26 +355,25 @@ class PyGameDisplay(displayio.Display):
     # def root_group(self, group):
     #     self._root_group = group
     #     self.show(group)
-    
+
     def _background(self):
         try:
             super()._background()
-            
+
             # if self._auto_refresh or self._pygame_display_force_update:
             #     # self._refresh_display()
             #     # time.sleep(1 / self._native_frames_per_second)
             #     print("calling flip")
-            # 
+            #
             #     self._refresh_display()
             #     self._pygame_display_force_update = False
             #     time.sleep(1 / self._native_frames_per_second)
-            #     
+            #
             #     pygame.display.flip()
-            
-            #if self._auto_refresh and 
-            
+
+            #if self._auto_refresh and
+
         except AttributeError:
             # background refresh thread attempted to access
             # display properties before the init() was complete
             pass
-            

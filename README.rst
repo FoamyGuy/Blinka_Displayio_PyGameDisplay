@@ -20,6 +20,13 @@ Introduction
 .. image:: https://github.com/FoamyGuy/Blinka_Displayio_PyGameDisplay/blob/main/banner.png?raw=true
     :alt: PyGame + Blinka
 
+VERSION NOTICE
+==============
+This library has not been updated to work with Blinka_DisplayIO 1.0.0+ yet. The most recent version of Bliaka_DisplayIO that is supported is 0.11.1.
+
+Info
+====
+
 Blinka makes her debut on the big screen! With this library you can use CircuitPython ``displayio`` code on PC and Raspberry Pi to output to a PyGame window instead of a hardware display connected to I2C or SPI. This makes it easy to to use ``displayio`` elements on HDMI and other large format screens.
 
 Warning: you must check ``display.check_quit()`` in the main loop and ``break`` if it's true in order to correctly handle the close button!
@@ -93,6 +100,25 @@ Usage Example
     while True:
         if display.check_quit():
             break
+
+Initialization Parameters
+=========================
+
+* ``width`` (required) - The width of the window. A value of zero maximizes the window
+* ``height`` (required) - The height of the window. A value of zero maximizes the window
+* ``icon`` (optional) - An icon for the PyGame window
+* ``caption`` (optional) - A caption for the PyGame window
+* ``native_frames_per_second`` (optional) - High values result in high CPU load
+* ``scale`` (optional) - A positive scaling factor for the window. Default is 1
+* ``hw_accel`` (optional) - Whether to use hardware acceleration. Default is True
+* ``flags`` (optional) - Pygame display flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
+
+Scale can be used to make smaller displays easier to see on high resolution displays.
+The actual window dimensions are ``width * scale`` by ``height * scale``, however the display dimensions remain ``width`` by ``height``.
+
+To ensure pixel accuracy of the display, only integer upscaling is supported (``scale >= 1``).
+
+If you encounter GL or EGL Pygame errors, try setting ``hw_accel`` to False to disable hardware acceleration. Performance may be reduced.
 
 Contributing
 ============
