@@ -23,7 +23,9 @@ Introduction
 Auto Refresh Notice
 ===================
 This library does not currently support auto refresh for displays. User code must call ``display.refresh()``
-in order to refresh the display.
+in order to refresh the display. Blinka_DisplayIO now uses threading for auto_refresh and PyGame doesn't
+like to have ``flip()`` called from non-main threads. If you have experience with either, and want
+to help add support PRs are welcome :).
 
 Info
 ====
