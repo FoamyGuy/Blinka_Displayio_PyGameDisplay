@@ -30,11 +30,11 @@ __version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/foamyguy/Foamyguy_CircuitPython_Blinka_Displayio_PyGameDisplay.git"
 
 
-
 import pygame
 import numpy as np
 import time
-#import threading
+
+# import threading
 from dataclasses import astuple
 import traceback
 import displayio
@@ -73,8 +73,8 @@ class PyGameDisplay(displayio.Display):
         flags - pygame display-flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
         """
 
-        if auto_refresh == True:
-            raise NotImplemented("AutoRefresh not supported.")
+        if auto_refresh:
+            raise NotImplementedError("AutoRefresh not supported.")
 
         self._native_frames_per_second = native_frames_per_second
         self._icon = icon
@@ -85,14 +85,21 @@ class PyGameDisplay(displayio.Display):
 
         self._pygame_screen = None
         self._pygame_display_thread = None
-        #self._pygame_display_tevent = threading.Event()
+        # self._pygame_display_tevent = threading.Event()
         self._pygame_display_force_update = False
 
         if (flags & pygame.FULLSCREEN) or width == 0 or height == 0:
             width, height = self._get_screen_size()
 
         print("before super init")
-        super().__init__(None, _INIT_SEQUENCE, width=width, height=height, auto_refresh=False, **kwargs)
+        super().__init__(
+            None,
+            _INIT_SEQUENCE,
+            width=width,
+            height=height,
+            auto_refresh=False,
+            **kwargs,
+        )
         print("after super init")
         self._initialize(_INIT_SEQUENCE)
 
@@ -119,7 +126,7 @@ class PyGameDisplay(displayio.Display):
 
         # initialize the pygame module
         pygame.init()  # pylint: disable=no-member
-        if not self._hw_accel: # disable hardware acceleration
+        if not self._hw_accel:  # disable hardware acceleration
             pygame.display.gl_set_attribute(pygame.GL_ACCELERATED_VISUAL, 0)
         # load and set the logo
 
@@ -145,7 +152,8 @@ class PyGameDisplay(displayio.Display):
 
     def _pygame_refresh(self):
         while not self._pygame_display_tevent.is_set():
-            #print(f"{time.monotonic()} - auto_refresh: {self._auto_refresh} force update: {self._pygame_display_force_update}")
+            # print(f"{time.monotonic()} - auto_refresh: {self._auto_refresh}"
+            # "force update: {self._pygame_display_force_update}")
             # if not self._auto_refresh and not self._pygame_display_force_update:
             #     pygame.display.flip()
             #     continue
@@ -153,12 +161,11 @@ class PyGameDisplay(displayio.Display):
             if self._auto_refresh or self._pygame_display_force_update:
                 # self._refresh_display()
                 # time.sleep(1 / self._native_frames_per_second)
-                #print("calling flip")
+                # print("calling flip")
                 pygame.display.flip()
                 self._pygame_display_force_update = False
                 time.sleep(1 / self._native_frames_per_second)
                 self._refresh_display()
-
 
     def _refresh_area(self, area) -> bool:
         """Loop through dirty areas and redraw that area."""
@@ -169,15 +176,15 @@ class PyGameDisplay(displayio.Display):
             """convert RGB 565 buffer data to pygame Image"""
             # arr = np.fromstring(buff, dtype=np.uint16).newbyteorder('S')
             # arr = np.fromstring(buff, dtype=np.uint16).view(np.uint16().newbyteorder('S'))
-            dtype_swapped = np.dtype(np.uint16).newbyteorder('S')
+            dtype_swapped = np.dtype(np.uint16).newbyteorder("S")
             arr = np.fromstring(buff, dtype=np.uint16).view(dtype_swapped)
             r = (((arr & 0xF800) >> 11) * 255.0 / 31.0).astype(np.uint8)
             g = (((arr & 0x07E0) >> 5) * 255.0 / 63.0).astype(np.uint8)
             b = (((arr & 0x001F) >> 0) * 255.0 / 31.0).astype(np.uint8)
             arr = np.column_stack((r, g, b)).flat[0:]
-            return pygame.image.frombuffer(arr, size, 'RGB')
+            return pygame.image.frombuffer(arr, size, "RGB")
 
-        #print("INSIDE overridden _refresh_area()")
+        # print("INSIDE overridden _refresh_area()")
         # print("area: ")
         # print(area)
         clipped = Area()
@@ -205,8 +212,8 @@ class PyGameDisplay(displayio.Display):
                 rows_per_buffer = 1
             # If pixels are packed by column then ensure rows_per_buffer is on a byte boundary
             if (
-                    self._core.colorspace.depth < 8
-                    and self._core.colorspace.pixels_in_byte_share_row
+                self._core.colorspace.depth < 8
+                and self._core.colorspace.pixels_in_byte_share_row
             ):
                 pixels_per_byte = 8 // self._core.colorspace.depth
                 if rows_per_buffer % pixels_per_byte != 0:
@@ -236,10 +243,12 @@ class PyGameDisplay(displayio.Display):
             mask = memoryview(bytearray([0] * (mask_length * 4))).cast("I")
             self._core.fill_area(subrectangle, mask, buffer)
 
-            image_surface = rgb_to_surface(bytes(buffer), (subrectangle.width(), subrectangle.height()))
+            image_surface = rgb_to_surface(
+                bytes(buffer), (subrectangle.width(), subrectangle.height())
+            )
             self._pygame_screen.blit(image_surface, (subrectangle.x1, subrectangle.y1))
-            #pygame.display.flip()
-            #time.sleep(0.1)
+            # pygame.display.flip()
+            # time.sleep(0.1)
 
         return True
 
@@ -260,7 +269,7 @@ class PyGameDisplay(displayio.Display):
         the pygame-display was created on another thread.
         """
         # pylint: disable=no-member, unused-argument, protected-access
-        #print("inside refresh()")
+        # print("inside refresh()")
         # if not self._auto_refresh:
         #     self._pygame_display_force_update = True
 
@@ -272,6 +281,7 @@ class PyGameDisplay(displayio.Display):
         areas = []
         areas.append(self._core.area)
         return areas
+
     def check_quit(self):
         """
         Check if the quit button on the window is being pressed.
@@ -284,7 +294,7 @@ class PyGameDisplay(displayio.Display):
                     self._pygame_display_thread.join()
                     pygame.quit()
                     return True
-        except pygame.error as e:
+        except pygame.error:
             print("pygame error during check_quit()")
             print(traceback.format_exc())
             return True
@@ -371,7 +381,7 @@ class PyGameDisplay(displayio.Display):
             #
             #     pygame.display.flip()
 
-            #if self._auto_refresh and
+            # if self._auto_refresh and
 
         except AttributeError:
             # background refresh thread attempted to access

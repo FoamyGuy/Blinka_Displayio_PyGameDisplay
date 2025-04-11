@@ -122,8 +122,7 @@ for i in range(TOTAL_TICKS + 1):
     x_start = sparkline1.x - 5
     x_end = sparkline1.x
     y_both = int(round(sparkline1.y + (i * (chart_height) / (TOTAL_TICKS))))
-    if y_both > sparkline1.y + chart_height - 1:
-        y_both = sparkline1.y + chart_height - 1
+    y_both = min(y_both, sparkline1.y + chart_height - 1)
     my_group.append(Line(x_start, y_both, x_end, y_both, color=LINE_COLOR))
 
 

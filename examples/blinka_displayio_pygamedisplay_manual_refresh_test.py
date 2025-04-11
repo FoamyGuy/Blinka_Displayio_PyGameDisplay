@@ -5,10 +5,10 @@
 Make green and purple rectangles and a
 "Hello World" label.
 """
-import time
 
-from blinka_displayio_pygamedisplay import PyGameDisplay
 import displayio
+from blinka_displayio_pygamedisplay import PyGameDisplay
+
 
 # Make the display context. Change size if you want
 display = PyGameDisplay(width=320, height=240, auto_refresh=False)
@@ -27,9 +27,9 @@ bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=
 main_group.append(bg_sprite)
 
 display.refresh()
-#time.sleep(0.1)
+# time.sleep(0.1)
 # display.refresh()
-# 
+#
 color_palette[0] = 0xFFFF00
 display.refresh()
 

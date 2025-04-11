@@ -6,16 +6,16 @@ Make green and purple rectangles and a
 "Hello World" label.
 """
 
-import time
 from blinka_displayio_pygamedisplay import PyGameDisplay
 import rainbowio
 from adafruit_display_text import label
 import displayio
 import terminalio
 
+
 # Make the display context
 display = PyGameDisplay(icon="blinka.png", width=400, height=300, auto_refresh=False)
-#display.auto_refresh = False
+# display.auto_refresh = False
 
 # Make the display context
 splash = displayio.Group()
@@ -55,8 +55,8 @@ while True:
     if color_num > 255:
         color_num = 0
     display.refresh()
-    #print(time.monotonic())
-    #time.sleep(0.05)
+    # print(time.monotonic())
+    # time.sleep(0.05)
 
     if display.check_quit():
         print("check_quit() was true")

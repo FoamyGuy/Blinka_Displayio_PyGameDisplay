@@ -5,10 +5,8 @@
 Make green and purple rectangles and a
 "Hello World" label.
 """
-import time
-
 from blinka_displayio_pygamedisplay import PyGameDisplay
-
+import time
 import displayio
 from vectorio import Rectangle
 
@@ -26,22 +24,17 @@ main_group = displayio.Group()
 display.root_group = main_group
 
 blue = displayio.Palette(1)
-blue[0] = 0x0000ff
+blue[0] = 0x0000FF
 red = displayio.Palette(1)
-red[0] = 0xff0000
+red[0] = 0xFF0000
 green = displayio.Palette(1)
-green[0] = 0x00ff00
+green[0] = 0x00FF00
 yellow = displayio.Palette(1)
-yellow[0] = 0xffff00
+yellow[0] = 0xFFFF00
 
-palette_map = {
-    "0xff0000": red,
-    "0x00ff00": green,
-    "0xffff00": yellow,
-    "0x0000ff": blue
-}
+palette_map = {"0xff0000": red, "0x00ff00": green, "0xffff00": yellow, "0x0000ff": blue}
 
-f = open("input_out.txt", "r")
+f = open("input_out.txt", "r")  # pylint: disable=unspecified-encoding
 input_str = f.read()
 f.close()
 
@@ -72,8 +65,13 @@ for row in input_str.split("\n"):
     x_loc = x_cell * 21
     y_loc = y_cell * 21
     print(f"{x_loc}, {y_loc}")
-    rect = Rectangle(pixel_shader=palette_map[row.split(": ")[-1]],
-                     x=x_loc, y=y_loc, width=20, height=20)
+    rect = Rectangle(
+        pixel_shader=palette_map[row.split(": ")[-1]],
+        x=x_loc,
+        y=y_loc,
+        width=20,
+        height=20,
+    )
     main_group.append(rect)
     # time.sleep(0.05)
 
@@ -123,11 +121,13 @@ for pixel in pixels:
 
     for loc in same_color_shape:
         seen.add(loc)
-    
+
     if len(same_color_shape) > 1:
         if grid[pixel[1]][pixel[0]] in scores:
             if len(same_color_shape) >= 5:
-                scores[grid[pixel[1]][pixel[0]]] += len(same_color_shape) * len(same_color_shape) 
+                scores[grid[pixel[1]][pixel[0]]] += len(same_color_shape) * len(
+                    same_color_shape
+                )
             else:
                 scores[grid[pixel[1]][pixel[0]]] += len(same_color_shape)
         else:

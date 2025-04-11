@@ -11,6 +11,7 @@ import displayio
 from adafruit_display_shapes.rect import Rect
 from adafruit_display_shapes.circle import Circle
 from adafruit_display_shapes.roundrect import RoundRect
+
 # from adafruit_display_shapes.triangle import Triangle
 # from adafruit_display_shapes.line import Line
 # from adafruit_display_shapes.polygon import Polygon
@@ -75,7 +76,7 @@ splash.append(rect2)
 
 
 roundrect = RoundRect(10, 10, 61, 81, 10, fill=0x0, outline=0xFF00FF, stroke=6)
-roundrect.y += 270//2
+roundrect.y += 270 // 2
 splash.append(roundrect)
 
 display.refresh()

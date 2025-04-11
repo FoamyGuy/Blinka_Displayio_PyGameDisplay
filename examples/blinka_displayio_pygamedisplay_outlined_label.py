@@ -14,7 +14,7 @@ import displayio
 
 # Make the display context. Change size if you want
 display = PyGameDisplay(width=320, height=240, auto_refresh=False)
-    
+
 text_area = outlined_label.OutlinedLabel(
     terminalio.FONT,
     text="Outlined\nLabel",
@@ -25,7 +25,6 @@ text_area = outlined_label.OutlinedLabel(
 )
 text_area.anchor_point = (0, 0)
 text_area.anchored_position = (20, 10)
-
 
 
 # Make the display context
