@@ -40,6 +40,7 @@ This driver depends on:
 
 * `PyGame <https://github.com/pygame/pygame>`_
 * `Adafruit Blinka Displayio <https://github.com/adafruit/Adafruit_Blinka_Displayio>`_
+* `numpy <https://pypi.org/project/numpy/>`_
 
 Please ensure all dependencies are available they can be installed with pip3
 
