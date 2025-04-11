@@ -290,8 +290,8 @@ class PyGameDisplay(displayio.Display):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     # stop and leave method
-                    self._pygame_display_tevent.set()
-                    self._pygame_display_thread.join()
+                    # self._pygame_display_tevent.set()
+                    # self._pygame_display_thread.join()
                     pygame.quit()
                     return True
         except pygame.error:
