@@ -38,7 +38,7 @@ parrot_grid = displayio.TileGrid(
 
 group.append(parrot_grid)
 
-display.show(group)
+display.root_group = group
 
 parrot = True  #  state to track if an animation is currently running
 party = 0  #  time.monotonic() holder
@@ -62,6 +62,6 @@ while True:
                 #  animation cycle count is updated
                 party_count += 1
                 print("party parrot", party_count)
-
+            display.refresh()
     if display.check_quit():
         break

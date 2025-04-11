@@ -29,14 +29,18 @@ Implementation Notes
 __version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/foamyguy/Foamyguy_CircuitPython_Blinka_Displayio_PyGameDisplay.git"
 
-import time
-import threading
-from dataclasses import astuple
-import displayio
-import pygame
-from PIL import Image
 
-_INIT_SEQUENCE = None
+import pygame
+import numpy as np
+import time
+
+# import threading
+from dataclasses import astuple
+import traceback
+import displayio
+from displayio._area import Area
+
+_INIT_SEQUENCE = tuple()
 
 # pylint: disable=too-few-public-methods,too-many-instance-attributes
 class PyGameDisplay(displayio.Display):
@@ -54,6 +58,8 @@ class PyGameDisplay(displayio.Display):
         caption="Blinka Displayio PyGame",
         native_frames_per_second=60,
         flags=0,
+        hw_accel=True,
+        auto_refresh=False,
         **kwargs,
     ):
         # pylint: disable=too-many-arguments
@@ -63,23 +69,47 @@ class PyGameDisplay(displayio.Display):
         icon - optional icon for the PyGame window
         caption - caption for the PyGame window
         native_frames_per_second - high values result in high cpu-load
+        hw_accel - whether to use hardware acceleration. Default is True
         flags - pygame display-flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
         """
+
+        if auto_refresh:
+            raise NotImplementedError("AutoRefresh not supported.")
+
         self._native_frames_per_second = native_frames_per_second
         self._icon = icon
         self._caption = caption
+        self._hw_accel = hw_accel
         self._flags = flags
         self._subrectangles = []
 
         self._pygame_screen = None
         self._pygame_display_thread = None
-        self._pygame_display_tevent = threading.Event()
+        # self._pygame_display_tevent = threading.Event()
         self._pygame_display_force_update = False
 
         if (flags & pygame.FULLSCREEN) or width == 0 or height == 0:
             width, height = self._get_screen_size()
 
-        super().__init__(None, _INIT_SEQUENCE, width=width, height=height, **kwargs)
+        print("before super init")
+        super().__init__(
+            None,
+            _INIT_SEQUENCE,
+            width=width,
+            height=height,
+            auto_refresh=False,
+            **kwargs,
+        )
+        print("after super init")
+        self._initialize(_INIT_SEQUENCE)
+
+        # if not self.auto_refresh:
+        #     print("dummy refresh()")
+        #     # first manual refresh does not do anything.
+        #     # so do it here that way first one from user code
+        #     # works.
+        #     self.refresh()
+        #     time.sleep(0.3)
 
     def _get_screen_size(self):
         """autodetect screen-size: returns tuple (width,height)"""
@@ -96,6 +126,8 @@ class PyGameDisplay(displayio.Display):
 
         # initialize the pygame module
         pygame.init()  # pylint: disable=no-member
+        if not self._hw_accel:  # disable hardware acceleration
+            pygame.display.gl_set_attribute(pygame.GL_ACCELERATED_VISUAL, 0)
         # load and set the logo
 
         if self._icon:
@@ -108,40 +140,117 @@ class PyGameDisplay(displayio.Display):
 
         # create the screen; must happen on main thread on macOS
         self._pygame_screen = pygame.display.set_mode(
-            size=(self._width, self._height), flags=self._flags
+            size=(self.width, self.height), flags=self._flags
         )
 
         # just start the pygame-refresh loop
-        self._pygame_display_thread = threading.Thread(
-            target=self._pygame_refresh, daemon=True
-        )
-        self._pygame_display_thread.start()
+
+        # self._pygame_display_thread = threading.Thread(
+        #     target=self._pygame_refresh, daemon=True
+        # )
+        # self._pygame_display_thread.start()
 
     def _pygame_refresh(self):
-        # pygame-refresh loop
         while not self._pygame_display_tevent.is_set():
-            time.sleep(1 / self._native_frames_per_second)
-            # refresh pygame-display
-            if not self._auto_refresh and not self._pygame_display_force_update:
+            # print(f"{time.monotonic()} - auto_refresh: {self._auto_refresh}"
+            # "force update: {self._pygame_display_force_update}")
+            # if not self._auto_refresh and not self._pygame_display_force_update:
+            #     pygame.display.flip()
+            #     continue
+
+            if self._auto_refresh or self._pygame_display_force_update:
+                # self._refresh_display()
+                # time.sleep(1 / self._native_frames_per_second)
+                # print("calling flip")
                 pygame.display.flip()
-                continue
+                self._pygame_display_force_update = False
+                time.sleep(1 / self._native_frames_per_second)
+                self._refresh_display()
 
-            self._pygame_display_force_update = False
+    def _refresh_area(self, area) -> bool:
+        """Loop through dirty areas and redraw that area."""
 
-            # Go through groups and and add each to buffer
-            if self._core._current_group is not None:
-                buffer = Image.new("RGBA", (self._core._width, self._core._height))
-                # Recursively have everything draw to the image
+        # pylint: disable=too-many-locals, too-many-branches
 
-                self._core._current_group._fill_area(
-                    buffer
-                )  # pylint: disable=protected-access
-                # save image to buffer (or probably refresh buffer so we can compare)
-                self._buffer.paste(buffer)
+        def rgb_to_surface(buff, size):
+            """convert RGB 565 buffer data to pygame Image"""
+            # arr = np.fromstring(buff, dtype=np.uint16).newbyteorder('S')
+            # arr = np.fromstring(buff, dtype=np.uint16).view(np.uint16().newbyteorder('S'))
+            dtype_swapped = np.dtype(np.uint16).newbyteorder("S")
+            arr = np.fromstring(buff, dtype=np.uint16).view(dtype_swapped)
+            r = (((arr & 0xF800) >> 11) * 255.0 / 31.0).astype(np.uint8)
+            g = (((arr & 0x07E0) >> 5) * 255.0 / 63.0).astype(np.uint8)
+            b = (((arr & 0x001F) >> 0) * 255.0 / 31.0).astype(np.uint8)
+            arr = np.column_stack((r, g, b)).flat[0:]
+            return pygame.image.frombuffer(arr, size, "RGB")
 
-            self._subrectangles = self._core.get_refresh_areas()
-            for area in self._subrectangles:
-                self._refresh_display_area(area)
+        # print("INSIDE overridden _refresh_area()")
+        # print("area: ")
+        # print(area)
+        clipped = Area()
+        # Clip the area to the display by overlapping the areas.
+        # If there is no overlap then we're done.
+        if not self._core.clip_area(area, clipped):
+            return True
+
+        rows_per_buffer = clipped.height()
+        pixels_per_word = 32 // self._core.colorspace.depth
+        pixels_per_buffer = clipped.size()
+
+        # We should have lots of memory
+        buffer_size = clipped.size() // pixels_per_word
+
+        subrectangles = 1
+        # for SH1107 and other boundary constrained controllers
+        #      write one single row at a time
+        if self._core.sh1107_addressing:
+            subrectangles = rows_per_buffer // 8
+            rows_per_buffer = 8
+        elif clipped.size() > buffer_size * pixels_per_word:
+            rows_per_buffer = buffer_size * pixels_per_word // clipped.width()
+            if rows_per_buffer == 0:
+                rows_per_buffer = 1
+            # If pixels are packed by column then ensure rows_per_buffer is on a byte boundary
+            if (
+                self._core.colorspace.depth < 8
+                and self._core.colorspace.pixels_in_byte_share_row
+            ):
+                pixels_per_byte = 8 // self._core.colorspace.depth
+                if rows_per_buffer % pixels_per_byte != 0:
+                    rows_per_buffer -= rows_per_buffer % pixels_per_byte
+            subrectangles = clipped.height() // rows_per_buffer
+            if clipped.height() % rows_per_buffer != 0:
+                subrectangles += 1
+            pixels_per_buffer = rows_per_buffer * clipped.width()
+            buffer_size = pixels_per_buffer // pixels_per_word
+            if pixels_per_buffer % pixels_per_word:
+                buffer_size += 1
+        mask_length = (pixels_per_buffer // 32) + 1  # 1 bit per pixel + 1
+        remaining_rows = clipped.height()
+
+        for subrect_index in range(subrectangles):
+            subrectangle = Area(
+                x1=clipped.x1,
+                y1=clipped.y1 + rows_per_buffer * subrect_index,
+                x2=clipped.x2,
+                y2=clipped.y1 + rows_per_buffer * (subrect_index + 1),
+            )
+            if remaining_rows < rows_per_buffer:
+                subrectangle.y2 = subrectangle.y1 + remaining_rows
+            remaining_rows -= rows_per_buffer
+
+            buffer = memoryview(bytearray([0] * (buffer_size * 4)))  # .cast("I")
+            mask = memoryview(bytearray([0] * (mask_length * 4))).cast("I")
+            self._core.fill_area(subrectangle, mask, buffer)
+
+            image_surface = rgb_to_surface(
+                bytes(buffer), (subrectangle.width(), subrectangle.height())
+            )
+            self._pygame_screen.blit(image_surface, (subrectangle.x1, subrectangle.y1))
+            # pygame.display.flip()
+            # time.sleep(0.1)
+
+        return True
 
     def _write(self, command, data):
         pass
@@ -160,8 +269,18 @@ class PyGameDisplay(displayio.Display):
         the pygame-display was created on another thread.
         """
         # pylint: disable=no-member, unused-argument, protected-access
-        if not self._auto_refresh:
-            self._pygame_display_force_update = True
+        # print("inside refresh()")
+        # if not self._auto_refresh:
+        #     self._pygame_display_force_update = True
+
+        self._refresh_display()
+        self._pygame_display_force_update = False
+        pygame.display.flip()
+
+    def _get_refresh_areas(self) -> list[Area]:
+        areas = []
+        areas.append(self._core.area)
+        return areas
 
     def check_quit(self):
         """
@@ -176,6 +295,8 @@ class PyGameDisplay(displayio.Display):
                     pygame.quit()
                     return True
         except pygame.error:
+            print("pygame error during check_quit()")
+            print(traceback.format_exc())
             return True
         return False
 
@@ -233,14 +354,36 @@ class PyGameDisplay(displayio.Display):
     def auto_refresh(self, value: bool):
         self._auto_refresh = value
 
-    @property
-    def root_group(self):
-        """
-        The root group on the display. If the root group is set to None, no output will be shown.
-        """
-        return self._root_group
+    # @property
+    # def root_group(self):
+    #     """
+    #     The root group on the display. If the root group is set to None, no output will be shown.
+    #     """
+    #     return self._root_group
+    #
+    # @root_group.setter
+    # def root_group(self, group):
+    #     self._root_group = group
+    #     self.show(group)
 
-    @root_group.setter
-    def root_group(self, group):
-        self._root_group = group
-        self.show(group)
+    def _background(self):
+        try:
+            super()._background()
+
+            # if self._auto_refresh or self._pygame_display_force_update:
+            #     # self._refresh_display()
+            #     # time.sleep(1 / self._native_frames_per_second)
+            #     print("calling flip")
+            #
+            #     self._refresh_display()
+            #     self._pygame_display_force_update = False
+            #     time.sleep(1 / self._native_frames_per_second)
+            #
+            #     pygame.display.flip()
+
+            # if self._auto_refresh and
+
+        except AttributeError:
+            # background refresh thread attempted to access
+            # display properties before the init() was complete
+            pass
