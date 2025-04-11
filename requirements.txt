@@ -5,3 +5,4 @@
 
 adafruit-blinka-displayio
 pygame>=2.1.3dev8
+numpy
