@@ -20,9 +20,12 @@ Introduction
 .. image:: https://github.com/FoamyGuy/Blinka_Displayio_PyGameDisplay/blob/main/banner.png?raw=true
     :alt: PyGame + Blinka
 
-VERSION NOTICE
-==============
-This library has not been updated to work with Blinka_DisplayIO 1.0.0+ yet. The most recent version of Bliaka_DisplayIO that is supported is 0.11.1.
+Auto Refresh Notice
+===================
+This library does not currently support auto refresh for displays. User code must call ``display.refresh()``
+in order to refresh the display. Blinka_DisplayIO now uses threading for auto_refresh and PyGame doesn't
+like to have ``flip()`` called from non-main threads. If you have experience with either, and want
+to help add support PRs are welcome :).
 
 Info
 ====
@@ -100,6 +103,19 @@ Usage Example
     while True:
         if display.check_quit():
             break
+
+Initialization Parameters
+=========================
+
+* ``width`` (required) - The width of the window. A value of zero maximizes the window
+* ``height`` (required) - The height of the window. A value of zero maximizes the window
+* ``icon`` (optional) - An icon for the PyGame window
+* ``caption`` (optional) - A caption for the PyGame window
+* ``native_frames_per_second`` (optional) - High values result in high CPU load
+* ``hw_accel`` (optional) - Whether to use hardware acceleration. Default is True
+* ``flags`` (optional) - Pygame display flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
+
+If you encounter GL or EGL Pygame errors, try setting ``hw_accel`` to False to disable hardware acceleration. Performance may be reduced.
 
 Contributing
 ============

@@ -19,8 +19,8 @@ print(text_area.bounding_box)
 print(f"{text_area.x}, {text_area.y}")
 main_group = displayio.Group()
 main_group.append(text_area)
-display.show(main_group)
-
+display.root_group = main_group
+display.refresh()
 # text_area.y = 37
 while True:
     if display.check_quit():

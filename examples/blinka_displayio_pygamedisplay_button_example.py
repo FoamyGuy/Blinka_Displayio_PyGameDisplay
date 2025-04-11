@@ -25,7 +25,7 @@ BUTTON_LABEL_COLOR = 0x000000
 
 display = PyGameDisplay(width=320, height=240)
 splash = displayio.Group()
-display.show(splash)
+display.root_group = splash
 
 GREEN = 0x00FF00
 BLUE = 0x0000FF
@@ -60,6 +60,7 @@ button.body.fill = 0x0000FF
 # pylint: disable=no-member
 
 # Must check display.running in the main loop!
+display.refresh()
 while True:
     # get mouse up  events
     ev = pygame.event.get(eventtype=pygame.MOUSEBUTTONUP)
@@ -76,6 +77,7 @@ while True:
             else:
                 color_palette[0] = GREEN
                 CUR_COLOR = GREEN
+            display.refresh()
     # get mouse down  events
     ev = pygame.event.get(eventtype=pygame.MOUSEBUTTONDOWN)
     for event in ev:

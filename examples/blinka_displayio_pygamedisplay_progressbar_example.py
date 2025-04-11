@@ -21,7 +21,7 @@ color_palette[0] = 0x0000FF
 bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
 splash.append(bg_sprite)
 
-display.show(splash)
+display.root_group = splash
 
 # set progress bar width and height relative to board's display
 width = display.width - 40
@@ -37,11 +37,13 @@ progress_bar = ProgressBar(x, y, width, height, 1.0)
 splash.append(progress_bar)
 
 current_progress = 0.0
+display.refresh()
 while True:
     # range end is exclusive so we need to use 1 bigger than max number that we want
     for current_progress in range(0, 101, 1):
         print("Progress: {}%".format(current_progress))
         progress_bar.progress = current_progress / 100  # convert to decimal
+        display.refresh()
         time.sleep(0.01)
     time.sleep(0.3)
     progress_bar.progress = 0.0
