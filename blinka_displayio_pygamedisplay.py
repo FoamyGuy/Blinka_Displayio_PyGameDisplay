@@ -91,7 +91,7 @@ class PyGameDisplay(displayio.Display):
         if (flags & pygame.FULLSCREEN) or width == 0 or height == 0:
             width, height = self._get_screen_size()
 
-        print("before super init")
+        #print("before super init")
         super().__init__(
             None,
             _INIT_SEQUENCE,
@@ -100,7 +100,7 @@ class PyGameDisplay(displayio.Display):
             auto_refresh=False,
             **kwargs,
         )
-        print("after super init")
+        #print("after super init")
         self._initialize(_INIT_SEQUENCE)
 
         # if not self.auto_refresh:
@@ -131,7 +131,7 @@ class PyGameDisplay(displayio.Display):
         # load and set the logo
 
         if self._icon:
-            print(f"loading icon: {self._icon}")
+            #print(f"loading icon: {self._icon}")
             icon = pygame.image.load(self._icon)
             pygame.display.set_icon(icon)
 
@@ -307,7 +307,6 @@ class PyGameDisplay(displayio.Display):
         executed every interval seconds. Use this callback for
         application specific logic.
         """
-        print(".")
         if events is None:
             events = []
         if interval is None:
