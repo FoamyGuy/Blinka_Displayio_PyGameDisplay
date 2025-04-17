@@ -38,11 +38,11 @@ implementations due to technical limitations of Pygame.
 Pygame does not support updating the UI and refreshing the display from a
 background thread but this is how CircuitPython implements it. To work around
 this limitation, the library tells the main thread to refresh the display on
-the next occasion. This happens whenever you call `display.check_quit()`.
+the next occasion. This happens whenever you call ``display.check_quit()``.
 
 To keep your UI responsive, make sure to
 
-  - call `check_quit()` on a regular basis
+  - call ``display.check_quit()`` on a regular basis
   - do lengthy processing (e.g. fetching data from the net) in a separate thread.
     This thread should only update data, but not any UI elements (e.g. labels).
 
