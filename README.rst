@@ -20,12 +20,6 @@ Introduction
 .. image:: https://github.com/FoamyGuy/Blinka_Displayio_PyGameDisplay/blob/main/banner.png?raw=true
     :alt: PyGame + Blinka
 
-Auto Refresh Notice
-===================
-This library does not currently support auto refresh for displays. User code must call ``display.refresh()``
-in order to refresh the display. Blinka_DisplayIO now uses threading for auto_refresh and PyGame doesn't
-like to have ``flip()`` called from non-main threads. If you have experience with either, and want
-to help add support PRs are welcome :).
 
 Info
 ====
@@ -33,6 +27,31 @@ Info
 Blinka makes her debut on the big screen! With this library you can use CircuitPython ``displayio`` code on PC and Raspberry Pi to output to a PyGame window instead of a hardware display connected to I2C or SPI. This makes it easy to to use ``displayio`` elements on HDMI and other large format screens.
 
 Warning: you must check ``display.check_quit()`` in the main loop and ``break`` if it's true in order to correctly handle the close button!
+
+
+Auto Refresh
+============
+
+Auto refresh works differently for this library than for native CircuitPython
+implementations due to technical limitations of Pygame.
+
+Pygame does not support updating the UI and refreshing the display from a
+background thread but this is how CircuitPython implements it. To work around
+this limitation, the library tells the main thread to refresh the display on
+the next occasion. This happens whenever you call ``display.check_quit()``.
+
+To keep your UI responsive, make sure to
+
+  - call ``display.check_quit()`` on a regular basis
+  - do lengthy processing (e.g. fetching data from the net) in a separate thread.
+    This thread should only update data, but not any UI elements (e.g. labels).
+
+If you disable auto-refresh, the display will still refresh on certain
+externally triggered events from the window-manager of your OS. This includes
+events like maximizing a window, moving it, uncovering it and so on. Failing
+to react to these events might make the window-manager angry and you will
+be asked what to do with the unresponsive window.
+
 
 Dependencies
 =============
@@ -99,7 +118,6 @@ Usage Example
 
     bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
     splash.append(bg_sprite)
-    # Must check display.running in the main loop!
 
     while True:
         if display.check_quit():
