@@ -242,9 +242,11 @@ class PyGameDisplay(busdisplay.BusDisplay):
         areas.append(self._core.area)
         return areas
 
-    def check_quit(self):
+    def check_quit(self, delay=0.05):
         """
         Check if the quit button on the window is being pressed.
+
+        delay - add a delay to reduce CPU load
         """
         try:
             for event in pygame.event.get():
@@ -263,14 +265,23 @@ class PyGameDisplay(busdisplay.BusDisplay):
             print("pygame error during check_quit()")
             print(traceback.format_exc())
             return True
+        time.sleep(delay)
         return False
 
-    def event_loop(self, interval=None, on_time=None, on_event=None, events=None):
+    def event_loop(self, interval=None, on_time=None,
+                   on_event=None, events=None, delay=0.05):
         """
         pygame event-loop. Has to be called by the main thread. This method
         terminates in case of a QUIT-event. An optional callback on_time is
         executed every interval seconds. Use this callback for
         application specific logic.
+
+        interval - interval in seconds for on_time()
+        on_time - callback, executed every interval seconds
+        on_event - callback for specific pygame-events, e.g. to process
+                   mouse-clicks
+        events - list of pygame-events to pass to on_event
+        delay - add a delay to reduce CPU load
         """
         if events is None:
             events = []
@@ -297,7 +308,7 @@ class PyGameDisplay(busdisplay.BusDisplay):
             if on_time and time.monotonic() > next_time:
                 on_time()
                 next_time = time.monotonic() + interval
-            time.sleep(0.05)
+            time.sleep(delay)
 
     def _background(self):
         """ background processing """
