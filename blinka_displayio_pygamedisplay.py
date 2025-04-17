@@ -44,13 +44,14 @@ from displayio._area import Area
 _DISPLAYIO_EVENT = pygame.event.custom_type()
 _DISPLAYIO_EVENT_CODE_REFRESH = 1
 _PYGAME_REDRAW_EVENTS = [
-  pygame.WINDOWSHOWN,
-  pygame.WINDOWEXPOSED,
-  pygame.WINDOWMOVED,
-  pygame.WINDOWRESIZED,
-  pygame.WINDOWSIZECHANGED,
-  pygame.WINDOWMAXIMIZED,
-  pygame.WINDOWRESTORED  ]
+    pygame.WINDOWSHOWN,
+    pygame.WINDOWEXPOSED,
+    pygame.WINDOWMOVED,
+    pygame.WINDOWRESIZED,
+    pygame.WINDOWSIZECHANGED,
+    pygame.WINDOWMAXIMIZED,
+    pygame.WINDOWRESTORED,
+]
 
 _INIT_SEQUENCE = tuple()
 
@@ -84,7 +85,7 @@ class PyGameDisplay(busdisplay.BusDisplay):
         flags - pygame display-flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
         """
 
-        self._native_secs_per_frame = 1/native_frames_per_second
+        self._native_secs_per_frame = 1 / native_frames_per_second
         self._last_refresh = 0
         self._refresh_pending = False
         self._icon = icon
@@ -98,7 +99,7 @@ class PyGameDisplay(busdisplay.BusDisplay):
         if (flags & pygame.FULLSCREEN) or width == 0 or height == 0:
             width, height = self._get_screen_size()
 
-        #print("before super init")
+        # print("before super init")
         super().__init__(
             None,
             _INIT_SEQUENCE,
@@ -106,7 +107,7 @@ class PyGameDisplay(busdisplay.BusDisplay):
             height=height,
             **kwargs,
         )
-        #print("after super init")
+        # print("after super init")
         self._initialize(_INIT_SEQUENCE)
 
     def _get_screen_size(self):
@@ -129,7 +130,7 @@ class PyGameDisplay(busdisplay.BusDisplay):
 
         # load and set the logo
         if self._icon:
-            #print(f"loading icon: {self._icon}")
+            # print(f"loading icon: {self._icon}")
             icon = pygame.image.load(self._icon)
             pygame.display.set_icon(icon)
 
@@ -224,7 +225,7 @@ class PyGameDisplay(busdisplay.BusDisplay):
         return True
 
     def _refresh_display(self):
-        """ override base-class """
+        """override base-class"""
         super()._refresh_display()
         pygame.display.flip()
         self._last_refresh = time.monotonic()
@@ -250,8 +251,10 @@ class PyGameDisplay(busdisplay.BusDisplay):
         """
         try:
             for event in pygame.event.get():
-                if (event.type == _DISPLAYIO_EVENT and
-                    event.code == _DISPLAYIO_EVENT_CODE_REFRESH):
+                if (
+                    event.type == _DISPLAYIO_EVENT
+                    and event.code == _DISPLAYIO_EVENT_CODE_REFRESH
+                ):
                     self._refresh_display()
                 elif event.type in [pygame.QUIT, pygame.WINDOWCLOSE]:
                     # stop and leave method
@@ -268,8 +271,9 @@ class PyGameDisplay(busdisplay.BusDisplay):
         time.sleep(delay)
         return False
 
-    def event_loop(self, interval=None, on_time=None,
-                   on_event=None, events=None, delay=0.05):
+    def event_loop(
+        self, interval=None, on_time=None, on_event=None, events=None, delay=0.05
+    ):
         """
         pygame event-loop. Has to be called by the main thread. This method
         terminates in case of a QUIT-event. An optional callback on_time is
@@ -291,8 +295,10 @@ class PyGameDisplay(busdisplay.BusDisplay):
         while True:
             for event in pygame.event.get():
                 # pylint: disable=no-else-return
-                if (event.type == _DISPLAYIO_EVENT and
-                    event.code == _DISPLAYIO_EVENT_CODE_REFRESH):
+                if (
+                    event.type == _DISPLAYIO_EVENT
+                    and event.code == _DISPLAYIO_EVENT_CODE_REFRESH
+                ):
                     self._refresh_display()
                 elif event.type in [pygame.QUIT, pygame.WINDOWCLOSE]:
                     # stop and leave method
@@ -311,7 +317,7 @@ class PyGameDisplay(busdisplay.BusDisplay):
             time.sleep(delay)
 
     def _background(self):
-        """ background processing """
+        """background processing"""
 
         # Displayio-Core will call this method in a background thread
         # to refresh the display.
@@ -322,16 +328,18 @@ class PyGameDisplay(busdisplay.BusDisplay):
 
         # the main thread sets this to None during quit
         if not self._pygame_screen:
-          return
+            return
 
         try:
             if (
-                self._auto_refresh and not self._refresh_pending
+                self._auto_refresh
+                and not self._refresh_pending
                 and (time.monotonic() - self._last_refresh)
                 > self._native_secs_per_frame
-                ):
-                event = pygame.event.Event(_DISPLAYIO_EVENT,
-                                     code=_DISPLAYIO_EVENT_CODE_REFRESH)
+            ):
+                event = pygame.event.Event(
+                    _DISPLAYIO_EVENT, code=_DISPLAYIO_EVENT_CODE_REFRESH
+                )
                 pygame.event.post(event)
                 self._refresh_pending = True
         except AttributeError:
