@@ -34,10 +34,7 @@ import pygame
 import numpy as np
 import time
 
-# import threading
-from dataclasses import astuple
 import traceback
-import displayio
 import busdisplay
 from displayio._area import Area
 
@@ -145,7 +142,7 @@ class PyGameDisplay(busdisplay.BusDisplay):
     def _refresh_area(self, area) -> bool:
         """Loop through dirty areas and redraw that area."""
 
-        # pylint: disable=too-many-locals, too-many-branches
+        # pylint: disable=too-many-locals, too-many-branches, invalid-name
 
         def rgb_to_surface(buff, size):
             """convert RGB 565 buffer data to pygame Image"""
@@ -274,6 +271,8 @@ class PyGameDisplay(busdisplay.BusDisplay):
     def event_loop(
         self, interval=None, on_time=None, on_event=None, events=None, delay=0.05
     ):
+        # pylint: disable=too-many-arguments
+
         """
         pygame event-loop. Has to be called by the main thread. This method
         terminates in case of a QUIT-event. An optional callback on_time is
