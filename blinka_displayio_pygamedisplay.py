@@ -43,6 +43,14 @@ from displayio._area import Area
 
 _DISPLAYIO_EVENT = pygame.event.custom_type()
 _DISPLAYIO_EVENT_CODE_REFRESH = 1
+_PYGAME_REDRAW_EVENTS = [
+  pygame.WINDOWSHOWN,
+  pygame.WINDOWEXPOSED,
+  pygame.WINDOWMOVED,
+  pygame.WINDOWRESIZED,
+  pygame.WINDOWSIZECHANGED,
+  pygame.WINDOWMAXIMIZED,
+  pygame.WINDOWRESTORED  ]
 
 _INIT_SEQUENCE = tuple()
 
@@ -248,6 +256,9 @@ class PyGameDisplay(busdisplay.BusDisplay):
                     pygame.quit()
                     self._pygame_screen = None
                     return True
+                elif event.type in _PYGAME_REDRAW_EVENTS:
+                    # force refresh even if auto_refresh == False
+                    self._refresh_display()
         except pygame.error:
             print("pygame error during check_quit()")
             print(traceback.format_exc())
@@ -276,6 +287,9 @@ class PyGameDisplay(busdisplay.BusDisplay):
                     # stop and leave method
                     pygame.quit()
                     return
+                elif event.type in _PYGAME_REDRAW_EVENTS:
+                    # force refresh even if auto_refresh == False
+                    self._refresh_display()
                 elif event.type in events:
                     # use callback for event-processing
                     on_event(event)
