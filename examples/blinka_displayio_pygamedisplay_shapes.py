@@ -20,7 +20,7 @@ from blinka_displayio_pygamedisplay import PyGameDisplay
 # Make the display context
 splash = displayio.Group(scale=2)
 
-display = PyGameDisplay(icon="blinka.png", width=640, height=480)
+display = PyGameDisplay(icon="blinka.png", width=640, height=480, auto_refresh=False)
 display.root_group = splash
 
 # Make a background color fill

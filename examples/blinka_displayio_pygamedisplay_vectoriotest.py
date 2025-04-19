@@ -19,23 +19,28 @@ display.rotation = 0
 main_group = displayio.Group()
 display.root_group = main_group
 
-color_palette = displayio.Palette(1)
+color_palette = displayio.Palette(5)
 color_palette[0] = 0xFFFF00  # Bright Green
 
-other_color_palette = displayio.Palette(1)
+other_color_palette = displayio.Palette(5)
 other_color_palette[0] = 0x00FF00  # Bright Green
+other_color_palette[1] = 0x0000FF
+other_color_palette[2] = 0xFF0000
+other_color_palette[3] = 0xFFFF00
+other_color_palette[4] = 0xFF00FF
 
-circle = vectorio.Circle(pixel_shader=color_palette, radius=25, x=50, y=50)
-main_group.append(circle)
+# circle = vectorio.Circle(pixel_shader=color_palette, radius=25, x=50, y=50)
+# main_group.append(circle)
 
 rectangle = vectorio.Rectangle(
-    pixel_shader=other_color_palette, width=40, height=30, x=155, y=145
+    pixel_shader=other_color_palette, width=40, height=30, x=155, y=145, color_index=1
 )
+#rectangle.color_index = 1
 main_group.append(rectangle)
 
-points = [(5, 5), (100, 20), (20, 20), (20, 100)]
-polygon = vectorio.Polygon(pixel_shader=color_palette, points=points, x=0, y=0)
-main_group.append(polygon)
+# points = [(5, 5), (100, 20), (20, 20), (20, 100)]
+# polygon = vectorio.Polygon(pixel_shader=color_palette, points=points, x=0, y=0)
+# main_group.append(polygon)
 
 display.refresh()
 while True:

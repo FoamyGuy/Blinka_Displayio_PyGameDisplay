@@ -46,7 +46,7 @@ text_area.anchored_position = (display.width // 2, display.height // 2)
 # text_group.append(text_area)  # Subgroup for text scaling
 splash.append(text_area)
 # time.sleep(2)
-display.refresh()
+# display.refresh()
 
 color_num = 0
 while True:

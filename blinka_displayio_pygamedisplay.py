@@ -59,7 +59,7 @@ class PyGameDisplay(displayio.Display):
         native_frames_per_second=60,
         flags=0,
         hw_accel=True,
-        auto_refresh=False,
+        auto_refresh=True,
         **kwargs,
     ):
         # pylint: disable=too-many-arguments
@@ -73,8 +73,7 @@ class PyGameDisplay(displayio.Display):
         flags - pygame display-flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
         """
 
-        if auto_refresh:
-            raise NotImplementedError("AutoRefresh not supported.")
+        self._pg_auto_refresh = auto_refresh
 
         self._native_frames_per_second = native_frames_per_second
         self._icon = icon
@@ -298,6 +297,11 @@ class PyGameDisplay(displayio.Display):
             print("pygame error during check_quit()")
             print(traceback.format_exc())
             return True
+
+        # print(f"{self._pg_auto_refresh}")
+        if self._pg_auto_refresh:
+            self.refresh()
+
         return False
 
     def event_loop(self, interval=None, on_time=None, on_event=None, events=None):
