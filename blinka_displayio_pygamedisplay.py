@@ -285,8 +285,7 @@ class PyGameDisplay(busdisplay.BusDisplay):
 
         interval - interval in seconds for on_time()
         on_time - callback, executed every interval seconds
-        on_event - callback for specific pygame-events, e.g. to process
-                   mouse-clicks
+        on_event - callback for specific pygame-events, e.g. to process mouse-clicks
         events - list of pygame-events to pass to on_event
         delay - add a delay to reduce CPU load
         """
