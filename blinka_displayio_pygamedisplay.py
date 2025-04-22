@@ -35,6 +35,7 @@ import numpy as np
 import time
 
 import traceback
+import displayio  # pylint: disable=unused-import
 import busdisplay
 from displayio._area import Area
 
