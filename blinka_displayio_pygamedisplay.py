@@ -247,12 +247,13 @@ class PyGameDisplay(busdisplay.BusDisplay):
         delay - add a delay to reduce CPU load
         """
         try:
+            do_refresh = False
             for event in pygame.event.get():
                 if (
                     event.type == _DISPLAYIO_EVENT
                     and event.code == _DISPLAYIO_EVENT_CODE_REFRESH
                 ):
-                    self._refresh_display()
+                    do_refresh = True
                 elif event.type in [pygame.QUIT, pygame.WINDOWCLOSE]:
                     # stop and leave method
                     pygame.quit()
@@ -260,7 +261,9 @@ class PyGameDisplay(busdisplay.BusDisplay):
                     return True
                 elif event.type in _PYGAME_REDRAW_EVENTS:
                     # force refresh even if auto_refresh == False
-                    self._refresh_display()
+                    do_refresh = True
+            if do_refresh:
+                self._refresh_display()
         except pygame.error:
             print("pygame error during check_quit()")
             print(traceback.format_exc())
@@ -292,23 +295,26 @@ class PyGameDisplay(busdisplay.BusDisplay):
             interval = -1
         next_time = time.monotonic() + interval
         while True:
+            do_refresh = False
             for event in pygame.event.get():
                 # pylint: disable=no-else-return
                 if (
                     event.type == _DISPLAYIO_EVENT
                     and event.code == _DISPLAYIO_EVENT_CODE_REFRESH
                 ):
-                    self._refresh_display()
+                    do_refresh = True
                 elif event.type in [pygame.QUIT, pygame.WINDOWCLOSE]:
                     # stop and leave method
                     pygame.quit()
                     return
                 elif event.type in _PYGAME_REDRAW_EVENTS:
                     # force refresh even if auto_refresh == False
-                    self._refresh_display()
+                    do_refresh = True
                 elif event.type in events:
                     # use callback for event-processing
                     on_event(event)
+            if do_refresh:
+                self._refresh_display()
             # execute application logic
             if on_time and time.monotonic() > next_time:
                 on_time()
@@ -345,4 +351,4 @@ class PyGameDisplay(busdisplay.BusDisplay):
             # background refresh thread attempted to access
             # display properties before the init() was complete
             pass
-        time.sleep(0.05)
+        time.sleep(self._native_secs_per_frame/2)
