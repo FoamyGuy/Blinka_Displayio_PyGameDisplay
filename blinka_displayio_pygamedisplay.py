@@ -352,4 +352,4 @@ class PyGameDisplay(busdisplay.BusDisplay):
             # background refresh thread attempted to access
             # display properties before the init() was complete
             pass
-        time.sleep(self._native_secs_per_frame/2)
+        time.sleep(self._native_secs_per_frame / 2)
