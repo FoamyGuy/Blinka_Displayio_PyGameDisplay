@@ -34,16 +34,27 @@ import pygame
 import numpy as np
 import time
 
-# import threading
-from dataclasses import astuple
 import traceback
-import displayio
+import displayio  # pylint: disable=unused-import
+import busdisplay
 from displayio._area import Area
+
+_DISPLAYIO_EVENT = pygame.event.custom_type()
+_DISPLAYIO_EVENT_CODE_REFRESH = 1
+_PYGAME_REDRAW_EVENTS = [
+    pygame.WINDOWSHOWN,
+    pygame.WINDOWEXPOSED,
+    pygame.WINDOWMOVED,
+    pygame.WINDOWRESIZED,
+    pygame.WINDOWSIZECHANGED,
+    pygame.WINDOWMAXIMIZED,
+    pygame.WINDOWRESTORED,
+]
 
 _INIT_SEQUENCE = tuple()
 
 # pylint: disable=too-few-public-methods,too-many-instance-attributes
-class PyGameDisplay(displayio.Display):
+class PyGameDisplay(busdisplay.BusDisplay):
     """PyGame display driver
 
     Represents one PyGame window. Uses None for all display
@@ -59,7 +70,7 @@ class PyGameDisplay(displayio.Display):
         native_frames_per_second=60,
         flags=0,
         hw_accel=True,
-        auto_refresh=False,
+        refresh_on_pygame_events=False,
         **kwargs,
     ):
         # pylint: disable=too-many-arguments
@@ -73,10 +84,10 @@ class PyGameDisplay(displayio.Display):
         flags - pygame display-flags, e.g. pygame.FULLSCREEN or pygame.NOFRAME
         """
 
-        if auto_refresh:
-            raise NotImplementedError("AutoRefresh not supported.")
-
-        self._native_frames_per_second = native_frames_per_second
+        self._native_secs_per_frame = 1 / native_frames_per_second
+        self._last_refresh = 0
+        self._refresh_pending = False
+        self.refresh_on_pygame_events = refresh_on_pygame_events
         self._icon = icon
         self._caption = caption
         self._hw_accel = hw_accel
@@ -84,32 +95,20 @@ class PyGameDisplay(displayio.Display):
         self._subrectangles = []
 
         self._pygame_screen = None
-        self._pygame_display_thread = None
-        # self._pygame_display_tevent = threading.Event()
-        self._pygame_display_force_update = False
 
         if (flags & pygame.FULLSCREEN) or width == 0 or height == 0:
             width, height = self._get_screen_size()
 
-        print("before super init")
+        # print("before super init")
         super().__init__(
             None,
             _INIT_SEQUENCE,
             width=width,
             height=height,
-            auto_refresh=False,
             **kwargs,
         )
-        print("after super init")
+        # print("after super init")
         self._initialize(_INIT_SEQUENCE)
-
-        # if not self.auto_refresh:
-        #     print("dummy refresh()")
-        #     # first manual refresh does not do anything.
-        #     # so do it here that way first one from user code
-        #     # works.
-        #     self.refresh()
-        #     time.sleep(0.3)
 
     def _get_screen_size(self):
         """autodetect screen-size: returns tuple (width,height)"""
@@ -128,10 +127,10 @@ class PyGameDisplay(displayio.Display):
         pygame.init()  # pylint: disable=no-member
         if not self._hw_accel:  # disable hardware acceleration
             pygame.display.gl_set_attribute(pygame.GL_ACCELERATED_VISUAL, 0)
-        # load and set the logo
 
+        # load and set the logo
         if self._icon:
-            print(f"loading icon: {self._icon}")
+            # print(f"loading icon: {self._icon}")
             icon = pygame.image.load(self._icon)
             pygame.display.set_icon(icon)
 
@@ -143,34 +142,10 @@ class PyGameDisplay(displayio.Display):
             size=(self.width, self.height), flags=self._flags
         )
 
-        # just start the pygame-refresh loop
-
-        # self._pygame_display_thread = threading.Thread(
-        #     target=self._pygame_refresh, daemon=True
-        # )
-        # self._pygame_display_thread.start()
-
-    def _pygame_refresh(self):
-        while not self._pygame_display_tevent.is_set():
-            # print(f"{time.monotonic()} - auto_refresh: {self._auto_refresh}"
-            # "force update: {self._pygame_display_force_update}")
-            # if not self._auto_refresh and not self._pygame_display_force_update:
-            #     pygame.display.flip()
-            #     continue
-
-            if self._auto_refresh or self._pygame_display_force_update:
-                # self._refresh_display()
-                # time.sleep(1 / self._native_frames_per_second)
-                # print("calling flip")
-                pygame.display.flip()
-                self._pygame_display_force_update = False
-                time.sleep(1 / self._native_frames_per_second)
-                self._refresh_display()
-
     def _refresh_area(self, area) -> bool:
         """Loop through dirty areas and redraw that area."""
 
-        # pylint: disable=too-many-locals, too-many-branches
+        # pylint: disable=too-many-locals, too-many-branches, invalid-name
 
         def rgb_to_surface(buff, size):
             """convert RGB 565 buffer data to pygame Image"""
@@ -247,143 +222,138 @@ class PyGameDisplay(displayio.Display):
                 bytes(buffer), (subrectangle.width(), subrectangle.height())
             )
             self._pygame_screen.blit(image_surface, (subrectangle.x1, subrectangle.y1))
-            # pygame.display.flip()
-            # time.sleep(0.1)
-
         return True
+
+    def _refresh_display(self):
+        """override base-class"""
+        super()._refresh_display()
+        pygame.display.flip()
+        self._last_refresh = time.monotonic()
+        self._refresh_pending = False
 
     def _write(self, command, data):
         pass
         # don't need to write to anything
 
     def _release(self):
-        self._pygame_display_tevent.set()
-        self._pygame_display_thread.join()
         pygame.quit()
-
-    def refresh(self, *, target_frames_per_second=60, minimum_frames_per_second=1):
-        """
-        While normal display-objects call this method also within a refresh
-        loop, this implementation uses this method only for explicit updates.
-        Note that we cannot just call the update-logic directly, since
-        the pygame-display was created on another thread.
-        """
-        # pylint: disable=no-member, unused-argument, protected-access
-        # print("inside refresh()")
-        # if not self._auto_refresh:
-        #     self._pygame_display_force_update = True
-
-        self._refresh_display()
-        self._pygame_display_force_update = False
-        pygame.display.flip()
 
     def _get_refresh_areas(self) -> list[Area]:
         areas = []
         areas.append(self._core.area)
         return areas
 
-    def check_quit(self):
+    def check_quit(self, delay=0.05):
         """
         Check if the quit button on the window is being pressed.
+
+        delay - add a delay to reduce CPU load
         """
         try:
+            do_refresh = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if (
+                    event.type == _DISPLAYIO_EVENT
+                    and event.code == _DISPLAYIO_EVENT_CODE_REFRESH
+                ):
+                    do_refresh = True
+                elif event.type in [pygame.QUIT, pygame.WINDOWCLOSE]:
                     # stop and leave method
-                    # self._pygame_display_tevent.set()
-                    # self._pygame_display_thread.join()
                     pygame.quit()
+                    self._pygame_screen = None
                     return True
+                elif (
+                    self.refresh_on_pygame_events
+                    and event.type in _PYGAME_REDRAW_EVENTS
+                ):
+                    # force refresh even if auto_refresh == False
+                    do_refresh = True
+            if do_refresh:
+                self._refresh_display()
         except pygame.error:
             print("pygame error during check_quit()")
             print(traceback.format_exc())
             return True
+        time.sleep(delay)
         return False
 
-    def event_loop(self, interval=None, on_time=None, on_event=None, events=None):
+    def event_loop(
+        self, interval=None, on_time=None, on_event=None, events=None, delay=0.05
+    ):
+        # pylint: disable=too-many-arguments
+
         """
         pygame event-loop. Has to be called by the main thread. This method
         terminates in case of a QUIT-event. An optional callback on_time is
         executed every interval seconds. Use this callback for
         application specific logic.
+
+        interval - interval in seconds for on_time()
+        on_time - callback, executed every interval seconds
+        on_event - callback for specific pygame-events, e.g. to process mouse-clicks
+        events - list of pygame-events to pass to on_event
+        delay - add a delay to reduce CPU load
         """
-        print(".")
         if events is None:
             events = []
         if interval is None:
             interval = -1
         next_time = time.monotonic() + interval
         while True:
+            do_refresh = False
             for event in pygame.event.get():
                 # pylint: disable=no-else-return
-                if event.type == pygame.QUIT:
+                if (
+                    event.type == _DISPLAYIO_EVENT
+                    and event.code == _DISPLAYIO_EVENT_CODE_REFRESH
+                ):
+                    do_refresh = True
+                elif event.type in [pygame.QUIT, pygame.WINDOWCLOSE]:
                     # stop and leave method
-                    self._pygame_display_tevent.set()
-                    self._pygame_display_thread.join()
                     pygame.quit()
                     return
+                elif event.type in _PYGAME_REDRAW_EVENTS:
+                    # force refresh even if auto_refresh == False
+                    do_refresh = True
                 elif event.type in events:
                     # use callback for event-processing
                     on_event(event)
+            if do_refresh:
+                self._refresh_display()
             # execute application logic
             if on_time and time.monotonic() > next_time:
                 on_time()
                 next_time = time.monotonic() + interval
-
-    def _refresh_display_area(self, rectangle):
-        """Loop through dirty rectangles and redraw that area."""
-
-        img = self._buffer.convert("RGB").crop(astuple(rectangle))
-        img = img.rotate(self._rotation, expand=True)
-        display_rectangle = self._apply_rotation(rectangle)
-        img = img.crop(astuple(self._clip(display_rectangle)))
-        raw_str = img.tobytes("raw", "RGB")
-        pygame_surface = pygame.image.fromstring(
-            raw_str, (img.width, img.height), "RGB"
-        )
-        # print("({}, {})".format(img.width, img.height))
-        self._pygame_screen.blit(pygame_surface, (rectangle.x1, rectangle.y1))
-        pygame.display.flip()
-
-    @property
-    def auto_refresh(self) -> bool:
-        """True when the display is refreshed automatically."""
-        return self._auto_refresh
-
-    @auto_refresh.setter
-    def auto_refresh(self, value: bool):
-        self._auto_refresh = value
-
-    # @property
-    # def root_group(self):
-    #     """
-    #     The root group on the display. If the root group is set to None, no output will be shown.
-    #     """
-    #     return self._root_group
-    #
-    # @root_group.setter
-    # def root_group(self, group):
-    #     self._root_group = group
-    #     self.show(group)
+            time.sleep(delay)
 
     def _background(self):
+        """background processing"""
+
+        # Displayio-Core will call this method in a background thread
+        # to refresh the display.
+        # Since pygame has to be updated from the main thread, we
+        # override the method from the parent class and only put an
+        # event on the pygame event-queue and let the main thread handle
+        # the refresh.
+
+        # the main thread sets this to None during quit
+        if not self._pygame_screen:
+            return
+
         try:
-            super()._background()
-
-            # if self._auto_refresh or self._pygame_display_force_update:
-            #     # self._refresh_display()
-            #     # time.sleep(1 / self._native_frames_per_second)
-            #     print("calling flip")
-            #
-            #     self._refresh_display()
-            #     self._pygame_display_force_update = False
-            #     time.sleep(1 / self._native_frames_per_second)
-            #
-            #     pygame.display.flip()
-
-            # if self._auto_refresh and
-
+            if (
+                self._auto_refresh
+                and not self._refresh_pending
+                and (time.monotonic() - self._last_refresh)
+                > self._native_secs_per_frame
+            ):
+                event = pygame.event.Event(
+                    _DISPLAYIO_EVENT, code=_DISPLAYIO_EVENT_CODE_REFRESH
+                )
+                pygame.event.post(event)
+                self._refresh_pending = True
         except AttributeError:
             # background refresh thread attempted to access
             # display properties before the init() was complete
             pass
+        time.sleep(self._native_secs_per_frame / 2)
