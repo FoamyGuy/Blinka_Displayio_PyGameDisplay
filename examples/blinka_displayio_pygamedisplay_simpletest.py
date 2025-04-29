@@ -14,12 +14,7 @@ import terminalio
 
 
 # Make the display context
-display = PyGameDisplay(
-    icon="blinka.png",
-    width=400,
-    height=300,
-    auto_refresh=False
-)
+display = PyGameDisplay(icon="blinka.png", width=400, height=300, auto_refresh=False)
 # display.auto_refresh = False
 
 # Make the display context
