@@ -70,6 +70,7 @@ class PyGameDisplay(busdisplay.BusDisplay):
         native_frames_per_second=60,
         flags=0,
         hw_accel=True,
+        refresh_on_pygame_events=False,
         **kwargs,
     ):
         # pylint: disable=too-many-arguments
@@ -86,6 +87,7 @@ class PyGameDisplay(busdisplay.BusDisplay):
         self._native_secs_per_frame = 1 / native_frames_per_second
         self._last_refresh = 0
         self._refresh_pending = False
+        self.refresh_on_pygame_events = refresh_on_pygame_events
         self._icon = icon
         self._caption = caption
         self._hw_accel = hw_accel
@@ -260,7 +262,10 @@ class PyGameDisplay(busdisplay.BusDisplay):
                     pygame.quit()
                     self._pygame_screen = None
                     return True
-                elif event.type in _PYGAME_REDRAW_EVENTS:
+                elif (
+                    self.refresh_on_pygame_events
+                    and event.type in _PYGAME_REDRAW_EVENTS
+                ):
                     # force refresh even if auto_refresh == False
                     do_refresh = True
             if do_refresh:
