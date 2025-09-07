@@ -53,6 +53,7 @@ _PYGAME_REDRAW_EVENTS = [
 
 _INIT_SEQUENCE = tuple()
 
+
 # pylint: disable=too-few-public-methods,too-many-instance-attributes
 class PyGameDisplay(busdisplay.BusDisplay):
     """PyGame display driver
@@ -152,7 +153,8 @@ class PyGameDisplay(busdisplay.BusDisplay):
             # arr = np.fromstring(buff, dtype=np.uint16).newbyteorder('S')
             # arr = np.fromstring(buff, dtype=np.uint16).view(np.uint16().newbyteorder('S'))
             dtype_swapped = np.dtype(np.uint16).newbyteorder("S")
-            arr = np.fromstring(buff, dtype=np.uint16).view(dtype_swapped)
+            # NumPy 2.0 removed binary mode in fromstring; use frombuffer instead
+            arr = np.frombuffer(buff, dtype=np.uint16).view(dtype_swapped)
             r = (((arr & 0xF800) >> 11) * 255.0 / 31.0).astype(np.uint8)
             g = (((arr & 0x07E0) >> 5) * 255.0 / 63.0).astype(np.uint8)
             b = (((arr & 0x001F) >> 0) * 255.0 / 31.0).astype(np.uint8)
