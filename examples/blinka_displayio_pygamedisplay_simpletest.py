@@ -5,6 +5,7 @@
 Make green and purple rectangles and a
 "Hello World" label.
 """
+# pip install adafruit-circuitpython-display-text
 
 from blinka_displayio_pygamedisplay import PyGameDisplay
 import rainbowio
