@@ -53,6 +53,7 @@ _PYGAME_REDRAW_EVENTS = [
 
 _INIT_SEQUENCE = tuple()
 
+
 # pylint: disable=too-few-public-methods,too-many-instance-attributes
 class PyGameDisplay(busdisplay.BusDisplay):
     """PyGame display driver
