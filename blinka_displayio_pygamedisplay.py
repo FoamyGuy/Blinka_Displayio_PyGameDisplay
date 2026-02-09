@@ -240,11 +240,6 @@ class PyGameDisplay(busdisplay.BusDisplay):
     def _release(self):
         pygame.quit()
 
-    def _get_refresh_areas(self) -> list[Area]:
-        areas = []
-        areas.append(self._core.area)
-        return areas
-
     def check_quit(self, delay=0.05):
         """
         Check if the quit button on the window is being pressed.
