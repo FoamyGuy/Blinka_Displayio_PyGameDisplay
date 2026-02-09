@@ -159,6 +159,8 @@ class PyGameDisplay(busdisplay.BusDisplay):
             g = (((arr & 0x07E0) >> 5) * 255.0 / 63.0).astype(np.uint8)
             b = (((arr & 0x001F) >> 0) * 255.0 / 31.0).astype(np.uint8)
             arr = np.column_stack((r, g, b)).flat[0:]
+            if size[0] * size[1] * 3 < len(arr):
+                arr = arr[:size[0] * size[1] * 3]
             return pygame.image.frombuffer(arr, size, "RGB")
 
         # print("INSIDE overridden _refresh_area()")
