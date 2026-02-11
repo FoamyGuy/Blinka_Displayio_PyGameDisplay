@@ -50,6 +50,11 @@ _PYGAME_REDRAW_EVENTS = [
     pygame.WINDOWMAXIMIZED,
     pygame.WINDOWRESTORED,
 ]
+_DISPLAYIO_EVENTS = _PYGAME_REDRAW_EVENTS + [
+    _DISPLAYIO_EVENT,
+    pygame.QUIT,
+    pygame.WINDOWCLOSE
+]
 
 _INIT_SEQUENCE = tuple()
 
@@ -253,7 +258,7 @@ class PyGameDisplay(busdisplay.BusDisplay):
         """
         try:
             do_refresh = False
-            for event in pygame.event.get():
+            for event in pygame.event.get(eventtype=_DISPLAYIO_EVENTS):
                 if (
                     event.type == _DISPLAYIO_EVENT
                     and event.code == _DISPLAYIO_EVENT_CODE_REFRESH
@@ -303,7 +308,7 @@ class PyGameDisplay(busdisplay.BusDisplay):
         next_time = time.monotonic() + interval
         while True:
             do_refresh = False
-            for event in pygame.event.get():
+            for event in pygame.event.get(eventtype=_DISPLAYIO_EVENTS + events):
                 # pylint: disable=no-else-return
                 if (
                     event.type == _DISPLAYIO_EVENT
