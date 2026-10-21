@@ -24,11 +24,10 @@ Implementation Notes
 
 # pylint: disable=protected-access
 
-# imports
-
 __version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/foamyguy/Foamyguy_CircuitPython_Blinka_Displayio_PyGameDisplay.git"
 
+# imports
 
 import pygame
 import numpy as np
@@ -38,6 +37,8 @@ import traceback
 import displayio  # pylint: disable=unused-import
 import busdisplay
 from displayio._area import Area
+
+import keypad_pygame
 
 _DISPLAYIO_EVENT = pygame.event.custom_type()
 _DISPLAYIO_EVENT_CODE_REFRESH = 1
@@ -99,6 +100,7 @@ class PyGameDisplay(busdisplay.BusDisplay):
         self._hw_accel = hw_accel
         self._flags = flags
         self._subrectangles = []
+        self._keypad = None
 
         self._pygame_screen = None
 
@@ -250,6 +252,25 @@ class PyGameDisplay(busdisplay.BusDisplay):
         areas.append(self._core.area)
         return areas
 
+    def keypad(
+        self, py_keys, *, value_when_pressed, pull=True, interval=0.02, max_events=64
+    ) -> keypad_pygame.PyGameKeys:
+        # pylint: disable=too-many-arguments
+        """create a keypad compatible object"""
+        self._keypad = keypad_pygame.PyGameKeys(
+            py_keys,
+            value_when_pressed=value_when_pressed,
+            pull=pull,
+            interval=interval,
+            max_events=max_events,
+        )
+        self._keypad._display = self
+        return self._keypad
+
+    def _keypad_deinit(self):
+        """deinitialize the keypad. Don't call this method directly"""
+        self._keypad = None
+
     def check_quit(self, delay=0.05):
         """
         Check if the quit button on the window is being pressed.
@@ -275,6 +296,8 @@ class PyGameDisplay(busdisplay.BusDisplay):
                 ):
                     # force refresh even if auto_refresh == False
                     do_refresh = True
+                elif self._keypad and event.type in [pygame.KEYDOWN, pygame.KEYUP]:
+                    self._keypad._check(event)
             if do_refresh:
                 self._refresh_display()
         except pygame.error:
@@ -325,6 +348,8 @@ class PyGameDisplay(busdisplay.BusDisplay):
                 elif event.type in events:
                     # use callback for event-processing
                     on_event(event)
+                elif self._keypad and event.type in [pygame.KEYDOWN, pygame.KEYUP]:
+                    self._keypad._check(event)
             if do_refresh:
                 self._refresh_display()
             # execute application logic
