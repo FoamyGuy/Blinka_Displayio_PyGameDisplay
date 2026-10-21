@@ -53,6 +53,7 @@ class PyGameKeys(keypad._KeysBase):
           If a new event arrives when the queue is full, the oldest event is discarded.
         """
         self._display = None
+        self._scanning = True
         self._interval = interval
         self._keycodes = py_keys
         self._value_when_pressed = value_when_pressed
@@ -63,8 +64,9 @@ class PyGameKeys(keypad._KeysBase):
 
     def deinit(self):
         """Stop scanning"""
+        self._scanning = False
         if self._display:
-            self._display._keypad.deinit()
+            self._display._keypad_deinit()
             self._display = None
         super().deinit()
 
@@ -82,7 +84,7 @@ class PyGameKeys(keypad._KeysBase):
     def _scanning_loop(self):
         """This is called in a thread. Use a no-op implementation,
         since the PyGame event-loop registers key-events directly"""
-        while True:
+        while self._scanning:
             time.sleep(self._interval)
 
     def _keypad_keys_scan(self):
