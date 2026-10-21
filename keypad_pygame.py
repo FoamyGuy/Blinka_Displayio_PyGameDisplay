@@ -25,6 +25,7 @@ __repo__ = "https://github.com/foamyguy/Foamyguy_CircuitPython_Blinka_Displayio_
 
 
 class PyGameKeys(keypad._KeysBase):
+    # pylint: disable=too-many-instance-attributes
     """Manage a set of independent keys."""
 
     def __init__(
