@@ -44,7 +44,7 @@ classifiers = [
 dynamic = ["dependencies", "optional-dependencies"]
 
 [tool.setuptools]
-py-modules = ["blinka_displayio_pygamedisplay"]
+py-modules = ["blinka_displayio_pygamedisplay", "keypad_pygame"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
