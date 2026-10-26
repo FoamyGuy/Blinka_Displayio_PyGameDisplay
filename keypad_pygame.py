@@ -29,7 +29,7 @@ class PyGameKeys(keypad._KeysBase):
     """Manage a set of independent keys."""
 
     def __init__(
-        self, py_keys, *, value_when_pressed, pull=True, interval=0.02, max_events=64
+        self, py_keys, *, value_when_pressed, pull=True, interval=0, max_events=64
     ):
         # pylint: disable=unused-argument, too-many-arguments
         """
