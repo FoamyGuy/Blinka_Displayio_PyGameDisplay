@@ -56,6 +56,7 @@ _DISPLAYIO_EVENTS = _PYGAME_REDRAW_EVENTS + [
     pygame.QUIT,
     pygame.WINDOWCLOSE,
 ]
+_KEYPAD_EVENTS = [pygame.KEYDOWN, pygame.KEYUP]
 
 _INIT_SEQUENCE = tuple()
 
@@ -253,7 +254,7 @@ class PyGameDisplay(busdisplay.BusDisplay):
         return areas
 
     def keypad(
-        self, py_keys, *, value_when_pressed, pull=True, interval=0.02, max_events=64
+        self, py_keys, *, value_when_pressed, pull=True, interval=0, max_events=64
     ) -> keypad_pygame.PyGameKeys:
         # pylint: disable=too-many-arguments
         """create a keypad compatible object"""
@@ -279,7 +280,8 @@ class PyGameDisplay(busdisplay.BusDisplay):
         """
         try:
             do_refresh = False
-            for event in pygame.event.get(eventtype=_DISPLAYIO_EVENTS):
+            eventtypes = _DISPLAYIO_EVENTS + (_KEYPAD_EVENTS if self._keypad else [])
+            for event in pygame.event.get(eventtype=eventtypes):
                 if (
                     event.type == _DISPLAYIO_EVENT
                     and event.code == _DISPLAYIO_EVENT_CODE_REFRESH
@@ -331,7 +333,10 @@ class PyGameDisplay(busdisplay.BusDisplay):
         next_time = time.monotonic() + interval
         while True:
             do_refresh = False
-            for event in pygame.event.get(eventtype=_DISPLAYIO_EVENTS + events):
+            eventtypes = _DISPLAYIO_EVENTS + events
+            if self._keypad:
+                eventtypes += _KEYPAD_EVENTS
+            for event in pygame.event.get(eventtype=eventtypes):
                 # pylint: disable=no-else-return
                 if (
                     event.type == _DISPLAYIO_EVENT
